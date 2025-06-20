@@ -15,6 +15,6 @@ class DefaultController
   
     public function index()
     {
-        echo "Trang chính đang xây dựng. Chưa có view.";
+        //echo "Trang chính đang xây dựng. Chưa có view.";
     }
 }

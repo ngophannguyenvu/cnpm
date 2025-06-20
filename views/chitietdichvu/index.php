@@ -1,60 +1,177 @@
-<h2>Chi tiết dịch vụ</h2>
-<div id="ctdv-content-main">
-<p>Đây là giao diện quản lý Chi tiết dịch vụ. Bạn có thể thêm, sửa, xóa hoặc xem danh sách chi tiết dịch vụ tại đây.</p>
-<!-- Thêm bảng mẫu -->
-<table border="1" cellpadding="8" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>Mã ĐL</th>
-            <th>Mã DV</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>DL001</td><td>DV001</td>
-            <td>
-                <button class="btn-detail" data-id="DL001-DV001">Chi tiết</button>
-                <button class="btn-edit" data-id="DL001-DV001">Sửa</button>
-                <button class="btn-delete" data-id="DL001-DV001">Xoá</button>
-            </td>
-        </tr>
-        <tr>
-            <td>DL002</td><td>DV002</td>
-            <td>
-                <button class="btn-detail" data-id="DL002-DV002">Chi tiết</button>
-                <button class="btn-edit" data-id="DL002-DV002">Sửa</button>
-                <button class="btn-delete" data-id="DL002-DV002">Xoá</button>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<button class="btn-add">Thêm mới</button>
+<style>
+.ctdv-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff0f6;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(255, 105, 135, 0.15);
+    padding: 32px 24px 24px 24px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+.ctdv-title {
+    color: #ff4081;
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.ctdv-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.ctdv-table th, .ctdv-table td {
+    padding: 12px 16px;
+    text-align: center;
+}
+.ctdv-table th {
+    background: #ff80ab;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.ctdv-table tr:nth-child(even) {
+    background: #ffe4ec;
+}
+.ctdv-table tr:hover {
+    background: #ffd1e6;
+}
+.ctdv-btn {
+    background: #ff4081;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin: 0 2px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.ctdv-btn:hover {
+    background: #e73370;
+}
+.ctdv-btn.ctdv-add {
+    background: linear-gradient(90deg, #ff80ab, #ff4081);
+    font-weight: bold;
+    margin-top: 8px;
+    width: 160px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media (max-width: 600px) {
+    .ctdv-container { padding: 10px; }
+    .ctdv-title { font-size: 1.2rem; }
+    .ctdv-table th, .ctdv-table td { padding: 6px 4px; font-size: 0.95rem; }
+}
+</style>
+<div class="ctdv-container">
+    <div class="ctdv-title">Quản lý Chi tiết Dịch vụ</div>
+    
+    <div id="ctdv-table-wrap">
+        <table class="ctdv-table">
+            <thead>
+                <tr>
+                    <th>Mã ĐL</th>
+                    <th>Mã DV</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="ctdv-tbody">
+                <tr><td colspan="3">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button class="ctdv-btn ctdv-add" id="ctdv-btn-add">+ Thêm mới</button>
+    <div id="ctdv-content"></div>
 </div>
-<div id="ctdv-content"></div>
+
 <script>
+let _ctdvData = null;
+const ctdvTbody = document.getElementById('ctdv-tbody');
 const ctdvContent = document.getElementById('ctdv-content');
-const ctdvContentMain = document.getElementById('ctdv-content-main');
-function loadCTDVView(view) {
-    fetch('views/chitietdichvu/' + view + '.php')
+const ctdvTableWrap = document.getElementById('ctdv-table-wrap');
+
+function renderRows(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        ctdvTbody.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
+        return;
+    }
+    ctdvTbody.innerHTML = data.map(item => `
+        <tr>
+            <td>${item.MaDL}</td>
+            <td>${item.MaDV}</td>
+            <td>
+                <button class="ctdv-btn ctdv-detail" data-madl="${item.MaDL}" data-madv="${item.MaDV}">Chi tiết</button>
+                <button class="ctdv-btn ctdv-edit" data-madl="${item.MaDL}" data-madv="${item.MaDV}">Sửa</button>
+                <button class="ctdv-btn ctdv-delete" data-madl="${item.MaDL}" data-madv="${item.MaDV}">Xoá</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function fetchCTDV() {
+    if (!_ctdvData) {
+        ctdvTbody.innerHTML = '<tr><td colspan="3">Đang tải dữ liệu...</td></tr>';
+    } else {
+        renderRows(_ctdvData);
+    }
+    fetch("http://localhost:86/cnpm-BE/api/chitietdichvu")
+        .then(res => res.json())
+        .then(data => {
+            _ctdvData = data;
+            renderRows(data);
+        })
+        .catch(() => {
+            ctdvTbody.innerHTML = '<tr><td colspan="3">Lỗi tải dữ liệu</td></tr>';
+        });
+}
+
+function loadCTDVView(view, madl = '', madv = '') {
+    fetch(`views/chitietdichvu/${view}.php`)
         .then(res => res.text())
         .then(html => {
             ctdvContent.innerHTML = html;
-            ctdvContentMain.style.display = 'none';
+            ctdvTableWrap.style.display = 'none';
+            ctdvContent.scrollIntoView({behavior: 'smooth'});
+            if (view !== 'add' && madl && madv) {
+                document.querySelectorAll('[name="madl"]').forEach(e => e.value = madl);
+                document.querySelectorAll('[name="madv"]').forEach(e => e.value = madv);
+                if (view === 'detail') {
+                    document.getElementById('ctdv-madl').textContent = madl;
+                    document.getElementById('ctdv-madv').textContent = madv;
+                }
+            }
         });
 }
+
 function backToMain() {
     ctdvContent.innerHTML = '';
-    ctdvContentMain.style.display = '';
+    ctdvTableWrap.style.display = '';
+    renderRows(_ctdvData || []);
 }
-document.querySelector('.btn-add').onclick = () => loadCTDVView('add');
-document.querySelectorAll('.btn-edit').forEach(btn => btn.onclick = () => loadCTDVView('edit'));
-document.querySelectorAll('.btn-delete').forEach(btn => btn.onclick = () => loadCTDVView('delete'));
-document.querySelectorAll('.btn-detail').forEach(btn => btn.onclick = () => loadCTDVView('detail'));
-// Xử lý nút quay lại trong các view con
+
+document.getElementById('ctdv-btn-add').onclick = () => loadCTDVView('add');
+
 ctdvContent.addEventListener('click', function(e) {
-    if (e.target.tagName === 'BUTTON' && e.target.textContent.includes('Quay lại')) {
-        backToMain();
+    if (e.target.classList.contains('ctdv-back')) backToMain();
+});
+
+ctdvTbody.addEventListener('click', function(e) {
+    if (e.target.classList.contains('ctdv-detail')) {
+        loadCTDVView('detail', e.target.dataset.madl, e.target.dataset.madv);
+    } else if (e.target.classList.contains('ctdv-edit')) {
+        loadCTDVView('edit', e.target.dataset.madl, e.target.dataset.madv);
+    } else if (e.target.classList.contains('ctdv-delete')) {
+        loadCTDVView('delete', e.target.dataset.madl, e.target.dataset.madv);
     }
 });
-</script> 
+
+fetchCTDV();
+</script>
+ 

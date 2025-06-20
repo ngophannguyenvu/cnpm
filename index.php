@@ -146,7 +146,7 @@ if (method_exists($controller, $action)) {
 </head>
 <body>
     <div class="sidebar">
-        <h2>CNPM</h2>
+        <h2>Quản lý Spa</h2>
         <ul id="menu">
             <li class="active" data-view="home">Trang chủ</li>
             <li data-view="chitietdichvu">Chi tiết dịch vụ</li>
@@ -189,6 +189,17 @@ if (method_exists($controller, $action)) {
                 })
                 .then(html => {
                     mainContent.innerHTML = html;
+                    // Thực thi lại các script trong nội dung vừa load
+                    mainContent.querySelectorAll('script').forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        document.body.appendChild(newScript);
+                        oldScript.remove();
+                    });
                 })
                 .catch(err => {
                     mainContent.innerHTML = '<p style="color:red">Không tìm thấy trang hoặc có lỗi khi tải view.</p>';
