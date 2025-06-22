@@ -62,14 +62,31 @@
 }
 .tt-form .tt-msg.success { color: #43a047; }
 .tt-form .tt-msg.error { color: #e53935; }
+.tt-form .tt-old-info {
+    background: #ffe4ec;
+    padding: 12px 10px 10px 10px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    display: none;
+}
+.tt-form .tt-old-info .tt-old-label {
+    color: #e73370;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
 @media (max-width: 600px) {
     .tt-form { padding: 10px; }
     .tt-form-title { font-size: 1.1rem; }
 }
 </style>
-<form class="tt-form" id="tt-edit-form">
+<form class="tt-form" id="tt-edit-form" autocomplete="off">
     <div class="tt-form-title">Sửa trạng thái</div>
     <div class="tt-msg" id="tt-edit-msg"></div>
+    <div class="tt-old-info" id="tt-old-info">
+        <div class="tt-old-label">Thông tin cũ:</div>
+        <div><b>Mã trạng thái:</b> <span id="tt-old-matt"></span></div>
+        <div><b>Tên trạng thái:</b> <span id="tt-old-tentt"></span></div>
+    </div>
     <input type="hidden" name="matt">
     <label for="tentt">Tên trạng thái</label>
     <input type="text" id="tentt" name="tentt" required>
@@ -77,42 +94,52 @@
     <button type="button" class="tt-btn tt-back">Quay lại</button>
 </form>
 <script>
-document.querySelector('.tt-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const ttEditForm = document.getElementById('tt-edit-form');
-const ttEditMsg = document.getElementById('tt-edit-msg');
-if (typeof _ttData !== 'undefined' && ttEditForm.matt.value) {
-    const tt = (_ttData || []).find(x => x.MaTrangThai == ttEditForm.matt.value);
-    if (tt) {
-        ttEditForm.tentt.value = tt.TenTrangThai || '';
-    }
-}
-ttEditForm.onsubmit = function(e) {
-    e.preventDefault();
-    ttEditMsg.textContent = 'Đang xử lý...';
-    ttEditMsg.className = 'tt-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthai/' + ttEditForm.matt.value, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            TenTrangThai: ttEditForm.tentt.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success') {
-            ttEditMsg.textContent = 'Cập nhật trạng thái thành công!';
-            ttEditMsg.className = 'tt-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            ttEditMsg.textContent = data.message || 'Cập nhật thất bại!';
-            ttEditMsg.className = 'tt-msg error';
+(function() {
+    const ttEditForm = document.getElementById('tt-edit-form');
+    const ttEditMsg = document.getElementById('tt-edit-msg');
+    const ttOldInfo = document.getElementById('tt-old-info');
+    const matt = ttEditForm.matt.value;
+    // Hiển thị thông tin cũ nếu có
+    if (typeof _ttData !== 'undefined' && matt) {
+        const tt = (_ttData || []).find(x => x.Matrangthai == matt);
+        if (tt) {
+            document.getElementById('tt-old-matt').textContent = tt.Matrangthai || '';
+            document.getElementById('tt-old-tentt').textContent = tt.Tentrangthai || '';
+            ttEditForm.tentt.value = tt.Tentrangthai || '';
+            ttOldInfo.style.display = '';
         }
-    })
-    .catch(() => {
-        ttEditMsg.textContent = 'Lỗi kết nối máy chủ!';
-        ttEditMsg.className = 'tt-msg error';
-    });
-};
+    }
+    // Nút quay lại
+    ttEditForm.querySelector('.tt-back').onclick = function() {
+        if (typeof backToMain === 'function') backToMain();
+    };
+    // Submit form
+    ttEditForm.onsubmit = function(e) {
+        e.preventDefault();
+        ttEditMsg.textContent = 'Đang xử lý...';
+        ttEditMsg.className = 'tt-msg';
+        fetch('http://localhost:86/cnpm-be/api/trangthai/' + matt, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Tentrangthai: ttEditForm.tentt.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success || data.status === 'success' || data.message) {
+                ttEditMsg.textContent = data.message || 'Cập nhật trạng thái thành công!';
+                ttEditMsg.className = 'tt-msg success';
+                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchTrangThai === 'function') fetchTrangThai(); }, 1000);
+            } else {
+                ttEditMsg.textContent = data.message || 'Cập nhật thất bại!';
+                ttEditMsg.className = 'tt-msg error';
+            }
+        })
+        .catch(() => {
+            ttEditMsg.textContent = 'Lỗi kết nối máy chủ!';
+            ttEditMsg.className = 'tt-msg error';
+        });
+    };
+})();
 </script> 

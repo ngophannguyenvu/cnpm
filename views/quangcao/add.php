@@ -67,7 +67,7 @@
     .qc-form-title { font-size: 1.1rem; }
 }
 </style>
-<form class="qc-form" id="qc-add-form">
+<form class="qc-form" id="qc-add-form" autocomplete="off">
     <div class="qc-form-title">Thêm quảng cáo mới</div>
     <div class="qc-msg" id="qc-add-msg"></div>
     <label for="tenqc">Tên quảng cáo</label>
@@ -88,43 +88,8 @@
     <button type="button" class="qc-btn qc-back">Quay lại</button>
 </form>
 <script>
+if (typeof initAddQuangCaoForm === 'function') initAddQuangCaoForm();
 document.querySelector('.qc-back').onclick = function() {
     if (typeof backToMain === 'function') backToMain();
 };
-const qcAddForm = document.getElementById('qc-add-form');
-const qcAddMsg = document.getElementById('qc-add-msg');
-qcAddForm.onsubmit = function(e) {
-    e.preventDefault();
-    qcAddMsg.textContent = 'Đang xử lý...';
-    qcAddMsg.className = 'qc-msg';
-    fetch('http://localhost:86/cnpm-be/api/quangcao', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            Tieude: qcAddForm.tenqc.value,
-            Noidung: qcAddForm.noidung.value,
-            Loaiquangcao: qcAddForm.loaiquangcao.value,
-            Image: qcAddForm.hinhanh.value,
-            Ngaybatdau: qcAddForm.ngaybd.value,
-            Ngayketthuc: qcAddForm.ngaykt.value,
-            Manguoidung: qcAddForm.manguoidung.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message || data.success || data.status === 'success') {
-            qcAddMsg.textContent = data.message || 'Thêm quảng cáo thành công!';
-            qcAddMsg.className = 'qc-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            qcAddMsg.textContent = data.message || 'Thêm quảng cáo thất bại!';
-            qcAddMsg.className = 'qc-msg error';
-        }
-    })
-    .catch(() => {
-        qcAddMsg.textContent = 'Lỗi kết nối máy chủ!';
-        qcAddMsg.className = 'qc-msg error';
-    });
-};
-if (typeof initAddQuangCaoForm === 'function') initAddQuangCaoForm();
 </script> 

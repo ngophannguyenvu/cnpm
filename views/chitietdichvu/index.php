@@ -109,7 +109,7 @@ function renderRows(data) {
             <td>${item.MaDV}</td>
             <td>
                 <button class="ctdv-btn ctdv-detail" data-madl="${item.MaDL}" data-madv="${item.MaDV}">Chi tiết</button>
-                <button class="ctdv-btn ctdv-edit" data-madl="${item.MaDL}" data-madv="${item.MaDV}">Sửa</button>
+                
                 <button class="ctdv-btn ctdv-delete" data-madl="${item.MaDL}" data-madv="${item.MaDV}">Xoá</button>
             </td>
         </tr>
@@ -150,6 +150,12 @@ function loadCTDVView(view, madl = '', madv = '') {
                     document.getElementById('ctdv-madl').textContent = madl;
                     document.getElementById('ctdv-madv').textContent = madv;
                 }
+            }
+            if (view === 'add' && typeof initAddCTDVForm === 'function') {
+                initAddCTDVForm();
+            }
+            if (view === 'edit' && typeof initEditCTDVForm === 'function') {
+                initEditCTDVForm();
             }
         });
 }

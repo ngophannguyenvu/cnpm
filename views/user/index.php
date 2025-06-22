@@ -139,4 +139,14 @@ function loadUserView(view, manguoidung = '') {
 document.querySelector('.user-add').onclick = function() {
     loadUserView('add');
 };
+
+document.getElementById('user-list-tbody').addEventListener('click', function(e) {
+    if (e.target.classList.contains('user-detail')) {
+        loadUserView('detail', e.target.dataset.manguoidung);
+    } else if (e.target.classList.contains('user-edit')) {
+        loadUserView('edit', e.target.dataset.manguoidung);
+    } else if (e.target.classList.contains('user-delete')) {
+        loadUserView('delete', e.target.dataset.manguoidung);
+    }
+});
 </script> 

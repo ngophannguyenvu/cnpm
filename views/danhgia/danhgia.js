@@ -111,4 +111,65 @@ function initEditDanhGiaForm() {
         });
     };
 }
-window.initEditDanhGiaForm = initEditDanhGiaForm; 
+window.initEditDanhGiaForm = initEditDanhGiaForm;
+
+function loadDGView(view, madg = '') {
+    fetch(`views/danhgia/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            dgContent.innerHTML = html;
+            dgTableWrap.style.display = 'none';
+            dgContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddDanhGiaForm === 'function') {
+                initAddDanhGiaForm();
+            }
+            if (view === 'edit' && typeof window.initEditDanhGiaForm === 'function') {
+                window.initEditDanhGiaForm();
+            }
+            if (view !== 'add' && madg) {
+                document.querySelectorAll('[name="madg"]').forEach(e => e.value = madg);
+                if (view === 'detail') {
+                    document.getElementById('dg-madg').textContent = madg;
+                }
+            }
+            if (view === 'delete' && madg) {
+                document.querySelectorAll('[name="madg"]').forEach(e => e.value = madg);
+                setTimeout(() => {
+                    const dgBackBtn = document.querySelector('.dg-back');
+                    if (dgBackBtn) {
+                        dgBackBtn.onclick = function() {
+                            if (typeof backToMain === 'function') backToMain();
+                        };
+                    }
+                    const dgConfirmBtn = document.getElementById('dg-del-confirm');
+                    const dgDelMsg = document.getElementById('dg-del-msg');
+                    const madgInput = document.querySelector('input[name="madg"]');
+                    if (dgConfirmBtn && madgInput) {
+                        dgConfirmBtn.onclick = function() {
+                            dgDelMsg.textContent = 'Đang xử lý...';
+                            dgDelMsg.className = 'dg-del-msg';
+                            fetch('http://localhost:86/cnpm-be/api/danhgia/' + encodeURIComponent(madgInput.value), {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.message) {
+                                    dgDelMsg.textContent = data.message;
+                                    dgDelMsg.classList.add('success');
+                                    setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchDanhGia === 'function') fetchDanhGia(); }, 1000);
+                                } else {
+                                    dgDelMsg.textContent = data.error || 'Xoá thất bại!';
+                                    dgDelMsg.classList.add('error');
+                                }
+                            })
+                            .catch(() => {
+                                dgDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                                dgDelMsg.classList.add('error');
+                            });
+                        };
+                    }
+                }, 0);
+            }
+        });
+} 

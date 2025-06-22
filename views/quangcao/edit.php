@@ -67,7 +67,7 @@
     .qc-form-title { font-size: 1.1rem; }
 }
 </style>
-<form class="qc-form" id="qc-edit-form">
+<form class="qc-form" id="qc-edit-form" autocomplete="off">
     <div class="qc-form-title">Sửa quảng cáo</div>
     <div class="qc-msg" id="qc-edit-msg"></div>
     <!-- Thông tin cũ -->
@@ -99,4 +99,10 @@
     <input type="text" id="manguoidung" name="manguoidung" required>
     <button type="submit" class="qc-btn">Lưu thay đổi</button>
     <button type="button" class="qc-btn qc-back">Quay lại</button>
-</form> 
+</form>
+<script>
+if (typeof initEditQuangCaoForm === 'function') initEditQuangCaoForm();
+document.querySelector('.qc-back').onclick = function() {
+    if (typeof backToMain === 'function') backToMain();
+};
+</script> 

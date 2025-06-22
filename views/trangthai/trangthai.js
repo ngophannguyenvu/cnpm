@@ -58,4 +58,84 @@ function initAddTrangThaiForm() {
         });
     };
 }
-window.initAddTrangThaiForm = initAddTrangThaiForm; 
+window.initAddTrangThaiForm = initAddTrangThaiForm;
+
+function loadTTView(view, matt = '') {
+    fetch(`views/trangthai/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            ttContent.innerHTML = html;
+            ttTableWrap.style.display = 'none';
+            ttContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddTrangThaiForm === 'function') {
+                initAddTrangThaiForm();
+            }
+            if (view !== 'add' && matt) {
+                document.querySelectorAll('[name="matt"]').forEach(e => e.value = matt);
+                if (view === 'detail') {
+                    document.getElementById('tt-matt').textContent = matt;
+                }
+            }
+            if (view === 'delete' && matt) {
+                document.querySelectorAll('[name="matt"]').forEach(e => e.value = matt);
+                // Gắn lại sự kiện cho nút Xoá và Quay lại
+                const ttBackBtn = document.querySelector('.tt-back');
+                if (ttBackBtn) {
+                    ttBackBtn.onclick = function() {
+                        if (typeof backToMain === 'function') backToMain();
+                    };
+                }
+                const ttConfirmBtn = document.querySelector('.tt-confirm');
+                const ttDelMsg = document.getElementById('tt-del-msg');
+                const mattInput = document.querySelector('input[name="matt"]');
+                if (ttConfirmBtn && mattInput) {
+                    ttConfirmBtn.onclick = function() {
+                        ttDelMsg.textContent = 'Đang xử lý...';
+                        ttDelMsg.className = 'tt-msg';
+                        fetch('http://localhost:86/cnpm-be/api/trangthai/' + mattInput.value, {
+                            method: 'DELETE'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success || data.status === 'success') {
+                                ttDelMsg.textContent = data.message || 'Xoá trạng thái thành công!';
+                                ttDelMsg.className = 'tt-msg success';
+                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchTrangThai === 'function') fetchTrangThai(); }, 1000);
+                            } else {
+                                ttDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                ttDelMsg.className = 'tt-msg error';
+                            }
+                        })
+                        .catch(() => {
+                            ttDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                            ttDelMsg.className = 'tt-msg error';
+                        });
+                    };
+                }
+            }
+            // Thêm đoạn này để re-execute script inline
+            ttContent.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) newScript.src = oldScript.src;
+                else newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript).parentNode.removeChild(newScript);
+            });
+        });
+}
+
+document.querySelectorAll('.tt-delete').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const id = this.getAttribute('data-matt');
+        if (confirm('Bạn có chắc muốn xoá trạng thái này?')) {
+            fetch('http://localhost:86/cnpm-be/api/trangthai/' + id, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || 'Đã xoá!');
+                fetchTrangThai();
+            })
+            .catch(() => alert('Lỗi kết nối máy chủ!'));
+        }
+    });
+}); 

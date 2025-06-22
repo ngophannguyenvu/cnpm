@@ -84,4 +84,89 @@ function initEditDichVuForm() {
         });
     };
 }
+
+function addDichVuDeleteListeners() {
+    document.querySelectorAll('.dv-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-madv');
+            loadDVView('delete', id);
+        });
+    });
+}
+
+function renderDVRows(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        dvTbody.innerHTML = '<tr><td colspan="5">Không có dữ liệu</td></tr>';
+        return;
+    }
+    dvTbody.innerHTML = data.map(item => `
+        <tr>
+            <td>${item.MaDV}</td>
+            <td>${item.Tendichvu || ''}</td>
+            <td>${item.Gia ? Number(item.Gia).toLocaleString('vi-VN') + 'đ' : ''}</td>
+            <td>${item.MoTa || ''}</td>
+            <td>
+                <button class="dv-btn dv-edit" data-madv="${item.MaDV}">Sửa</button>
+                <button class="dv-btn dv-delete" data-madv="${item.MaDV}">Xoá</button>
+            </td>
+        </tr>
+    `).join('');
+    addDichVuDeleteListeners();
+}
+
+function loadDVView(view, madv = '') {
+    fetch(`views/dichvu/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            dvContent.innerHTML = html;
+            dvTableWrap.style.display = 'none';
+            dvContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddDichVuForm === 'function') {
+                initAddDichVuForm();
+            }
+            if (view === 'edit' && typeof window.initEditDichVuForm === 'function') {
+                window.initEditDichVuForm();
+            }
+            if (view === 'delete' && madv) {
+                document.querySelectorAll('[name="madv"]').forEach(e => e.value = madv);
+                const dvBackBtn = document.querySelector('.dv-back');
+                if (dvBackBtn) {
+                    dvBackBtn.onclick = function() {
+                        if (typeof backToDVMain === 'function') backToDVMain();
+                    };
+                }
+                const dvConfirmBtn = document.querySelector('.dv-confirm');
+                const dvDelMsg = document.getElementById('dv-del-msg');
+                const madvInput = document.querySelector('input[name="madv"]');
+                if (dvConfirmBtn && madvInput) {
+                    dvConfirmBtn.onclick = function() {
+                        dvDelMsg.textContent = 'Đang xử lý...';
+                        dvDelMsg.className = 'dv-msg';
+                        fetch('http://localhost:86/cnpm-be/api/dichvu/' + madvInput.value, {
+                            method: 'DELETE'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === 'Xóa dịch vụ thành công') {
+                                dvDelMsg.textContent = 'Xoá dịch vụ thành công!';
+                                dvDelMsg.className = 'dv-msg success';
+                                setTimeout(() => { if (typeof backToDVMain === 'function') backToDVMain(); }, 1000);
+                            } else {
+                                dvDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                dvDelMsg.className = 'dv-msg error';
+                            }
+                        })
+                        .catch(() => {
+                            dvDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                            dvDelMsg.className = 'dv-msg error';
+                        });
+                    };
+                }
+            }
+            if (view !== 'add' && madv) {
+                document.querySelectorAll('[name="madv"]').forEach(e => e.value = madv);
+            }
+        });
+}
+
 window.initEditDichVuForm = initEditDichVuForm; 

@@ -75,6 +75,7 @@ function renderRows(data) {
             </td>
         </tr>
     `).join('');
+    addHoaDonDeleteListeners();
 }
 
 function initEditHoaDonForm() {
@@ -143,6 +144,81 @@ function initEditHoaDonForm() {
 }
 window.initEditHoaDonForm = initEditHoaDonForm;
 
+function addHoaDonDeleteListeners() {
+    document.querySelectorAll('.hd-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-mahd');
+            if (confirm('Bạn có chắc muốn xoá hóa đơn này?')) {
+                fetch('http://localhost:86/cnpm-be/api/hoaDonVaThanhToan/' + id, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || 'Đã xoá!');
+                    fetchHoaDon();
+                })
+                .catch(() => alert('Lỗi kết nối máy chủ!'));
+            }
+        });
+    });
+}
+
 window.hdTbody = document.getElementById('hd-tbody');
 window.hdContent = document.getElementById('hd-content');
-window.hdTableWrap = document.getElementById('hd-table-wrap'); 
+window.hdTableWrap = document.getElementById('hd-table-wrap');
+
+function loadHDView(view, mahd = '') {
+    fetch(`views/hoadon/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            hdContent.innerHTML = html;
+            hdTableWrap.style.display = 'none';
+            hdContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add') {
+                if (typeof initAddHoaDonForm === 'function') initAddHoaDonForm();
+            }
+            if (view !== 'add' && mahd) {
+                document.querySelectorAll('[name="mahd"]').forEach(e => e.value = mahd);
+            }
+            if (view === 'edit' && typeof window.initEditHoaDonForm === 'function') {
+                window.initEditHoaDonForm();
+            }
+            if (view === 'delete' && mahd) {
+                document.querySelectorAll('[name="mahd"]').forEach(e => e.value = mahd);
+                // Gắn lại sự kiện cho nút Xoá và Quay lại
+                const hdBackBtn = document.querySelector('.hd-back');
+                if (hdBackBtn) {
+                    hdBackBtn.onclick = function() {
+                        if (typeof backToMain === 'function') backToMain();
+                    };
+                }
+                const hdConfirmBtn = document.querySelector('.hd-confirm');
+                const hdDelMsg = document.getElementById('hd-del-msg');
+                const mahdInput = document.querySelector('input[name="mahd"]');
+                if (hdConfirmBtn && mahdInput) {
+                    hdConfirmBtn.onclick = function() {
+                        hdDelMsg.textContent = 'Đang xử lý...';
+                        hdDelMsg.className = 'hd-msg';
+                        fetch('http://localhost:86/cnpm-be/api/hoaDonVaThanhToan/' + mahdInput.value, {
+                            method: 'DELETE'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success || data.status === 'success') {
+                                hdDelMsg.textContent = data.message || 'Xoá hóa đơn thành công!';
+                                hdDelMsg.className = 'hd-msg success';
+                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchHoaDon === 'function') fetchHoaDon(); }, 1000);
+                            } else {
+                                hdDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                hdDelMsg.className = 'hd-msg error';
+                            }
+                        })
+                        .catch(() => {
+                            hdDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                            hdDelMsg.className = 'hd-msg error';
+                        });
+                    };
+                }
+            }
+        });
+} 

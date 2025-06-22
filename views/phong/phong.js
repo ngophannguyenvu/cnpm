@@ -92,4 +92,63 @@ function initEditPhongForm() {
         });
     };
 }
-window.initEditPhongForm = initEditPhongForm; 
+window.initEditPhongForm = initEditPhongForm;
+
+function loadPhongView(view, maphong = '') {
+    fetch(`views/phong/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            phongContent.innerHTML = html;
+            phongTableWrap.style.display = 'none';
+            phongContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddPhongForm === 'function') {
+                initAddPhongForm();
+            }
+            if (view === 'edit' && typeof window.initEditPhongForm === 'function') {
+                window.initEditPhongForm();
+            }
+            if (view !== 'add' && maphong) {
+                document.querySelectorAll('[name="maphong"]').forEach(e => e.value = maphong);
+                if (view === 'detail') {
+                    document.getElementById('phong-maphong').textContent = maphong;
+                }
+            }
+            if (view === 'delete' && maphong) {
+                document.querySelectorAll('[name="maphong"]').forEach(e => e.value = maphong);
+                // Gắn lại sự kiện cho nút Xoá và Quay lại
+                const phongBackBtn = document.querySelector('.phong-back');
+                if (phongBackBtn) {
+                    phongBackBtn.onclick = function() {
+                        if (typeof backToMain === 'function') backToMain();
+                    };
+                }
+                const phongConfirmBtn = document.querySelector('.phong-confirm');
+                const phongDelMsg = document.getElementById('phong-del-msg');
+                const maphongInput = document.querySelector('input[name="maphong"]');
+                if (phongConfirmBtn && maphongInput) {
+                    phongConfirmBtn.onclick = function() {
+                        phongDelMsg.textContent = 'Đang xử lý...';
+                        phongDelMsg.className = 'phong-msg';
+                        fetch('http://localhost:86/cnpm-be/api/phong/' + maphongInput.value, {
+                            method: 'DELETE'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success || data.status === 'success' || data.message) {
+                                phongDelMsg.textContent = data.message || 'Xoá phòng thành công!';
+                                phongDelMsg.className = 'phong-msg success';
+                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchPhong === 'function') fetchPhong(); }, 1000);
+                            } else {
+                                phongDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                phongDelMsg.className = 'phong-msg error';
+                            }
+                        })
+                        .catch(() => {
+                            phongDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                            phongDelMsg.className = 'phong-msg error';
+                        });
+                    };
+                }
+            }
+        });
+} 

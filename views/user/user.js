@@ -20,9 +20,9 @@ function fetchUserList() {
                     <td>${user.Gioitinh || ''}</td>
                     <td>${user.Ngaysinh || ''}</td>
                     <td>
-                        <button class="user-action-btn" onclick="viewDetail('${user.Manguoidung}')">Chi tiết</button>
-                        <button class="user-action-btn" onclick="editUser('${user.Manguoidung}')">Sửa</button>
-                        <button class="user-action-btn" onclick="deleteUser('${user.Manguoidung}')">Xoá</button>
+                        <button class="user-action-btn user-detail" data-manguoidung="${user.Manguoidung}">Chi tiết</button>
+                        <button class="user-action-btn user-edit" data-manguoidung="${user.Manguoidung}">Sửa</button>
+                        <button class="user-action-btn user-delete" data-manguoidung="${user.Manguoidung}">Xoá</button>
                     </td>
                 </tr>
             `).join('') : '<tr><td colspan="7" style="text-align:center;color:#ff4081">Không có dữ liệu</td></tr>';
@@ -110,11 +110,10 @@ function initEditUserForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'user-msg';
-        fetch('http://localhost:86/cnpm-BE/api/user/updateUser', {
-            method: 'POST',
+        fetch('http://localhost:86/cnpm-BE/api/user/' + form.manguoidung.value, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                manguoidung: form.manguoidung.value,
                 hoten: form.hoten.value,
                 sdt: form.sdt.value,
                 diachi: form.diachi.value,
@@ -142,4 +141,83 @@ function initEditUserForm() {
 }
 window.initEditUserForm = initEditUserForm;
 
-fetchUserList(); 
+function loadUserView(view, manguoidung = '') {
+    fetch(`views/user/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('user-content').innerHTML = html;
+            document.getElementById('user-table-wrap').style.display = 'none';
+            document.getElementById('user-content').scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddUserForm === 'function') {
+                initAddUserForm();
+            }
+            if (view === 'edit' && typeof window.initEditUserForm === 'function') {
+                window.initEditUserForm();
+            }
+            if (view !== 'add' && manguoidung) {
+                document.querySelectorAll('[name="manguoidung"]').forEach(e => e.value = manguoidung);
+                if (view === 'detail') {
+                    const el = document.getElementById('user-manguoidung');
+                    if (el) el.textContent = manguoidung;
+                }
+            }
+            if (view === 'delete' && manguoidung) {
+                document.querySelectorAll('[name="manguoidung"]').forEach(e => e.value = manguoidung);
+                // Gắn lại sự kiện cho nút Xoá và Quay lại
+                const userBackBtn = document.querySelector('.user-back');
+                if (userBackBtn) {
+                    userBackBtn.onclick = function() {
+                        if (typeof backToMain === 'function') backToMain();
+                    };
+                }
+                const userConfirmBtn = document.querySelector('.user-confirm');
+                const userDelMsg = document.getElementById('user-del-msg');
+                const manguoidungInput = document.querySelector('input[name="manguoidung"]');
+                if (userConfirmBtn && manguoidungInput) {
+                    userConfirmBtn.onclick = function() {
+                        userDelMsg.textContent = 'Đang xử lý...';
+                        userDelMsg.className = 'user-msg';
+                        fetch('http://localhost:86/cnpm-be/api/user/' + manguoidungInput.value, {
+                            method: 'DELETE'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success || data.status === 'success' || data.message) {
+                                userDelMsg.textContent = data.message || 'Xoá người dùng thành công!';
+                                userDelMsg.className = 'user-msg success';
+                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchUser === 'function') fetchUser(); }, 1000);
+                            } else {
+                                userDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                userDelMsg.className = 'user-msg error';
+                            }
+                        })
+                        .catch(() => {
+                            userDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                            userDelMsg.className = 'user-msg error';
+                        });
+                    };
+                }
+            }
+        });
+}
+
+fetchUserList();
+
+// Event delegation cho các nút thao tác user
+const userTbody = document.getElementById('user-list-tbody');
+userTbody.addEventListener('click', function(e) {
+    if (e.target.classList.contains('user-detail')) {
+        loadUserView('detail', e.target.dataset.manguoidung);
+    } else if (e.target.classList.contains('user-edit')) {
+        loadUserView('edit', e.target.dataset.manguoidung);
+    } else if (e.target.classList.contains('user-delete')) {
+        loadUserView('delete', e.target.dataset.manguoidung);
+    }
+});
+
+function backToMain() {
+    document.getElementById('user-content').innerHTML = '';
+    document.getElementById('user-table-wrap').style.display = '';
+    fetchUserList();
+}
+window.backToMain = backToMain; 

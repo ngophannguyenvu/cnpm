@@ -61,10 +61,8 @@ const manguoidungInput = document.querySelector('input[name="manguoidung"]');
 document.querySelector('.user-confirm').onclick = function() {
     userDelMsg.textContent = 'Đang xử lý...';
     userDelMsg.className = 'user-msg';
-    fetch('http://localhost:86/cnpm-BE/api/user/deleteUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ manguoidung: manguoidungInput.value })
+    fetch('http://localhost:86/cnpm-BE/api/user/' + manguoidungInput.value, {
+        method: 'DELETE'
     })
     .then(res => res.json())
     .then(data => {
