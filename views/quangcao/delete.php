@@ -61,7 +61,7 @@ const maqcInput = document.querySelector('input[name="maqc"]');
 document.querySelector('.qc-confirm').onclick = function() {
     qcDelMsg.textContent = 'Đang xử lý...';
     qcDelMsg.className = 'qc-msg';
-    fetch('http://localhost:86/cnpm-BE/api/quangcao/' + maqcInput.value, {
+    fetch('http://localhost:86/cnpm-be/api/quangcao' + maqcInput.value, {
         method: 'DELETE'
     })
     .then(res => res.json())

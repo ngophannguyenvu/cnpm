@@ -61,7 +61,7 @@ const mahdInput = document.querySelector('input[name="mahd"]');
 document.querySelector('.hd-confirm').onclick = function() {
     hdDelMsg.textContent = 'Đang xử lý...';
     hdDelMsg.className = 'hd-msg';
-    fetch('http://localhost:86/cnpm-be/api/hoadonvathanhtoan/' + mahdInput.value, {
+    fetch('http://localhost:86/cnpm-be/api/hoaDonVaThanhToan/' + mahdInput.value, {
         method: 'DELETE'
     })
     .then(res => res.json())
