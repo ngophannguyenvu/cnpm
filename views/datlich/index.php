@@ -155,5 +155,40 @@
         <div id="dl-content"></div>
     </div>
     <script src="views/datlich/datlich.js"></script>
+    <script>
+    // Đảm bảo sau khi load view edit, luôn gọi lại initEditDatLichForm
+    function loadDLView(view, madl = '') {
+        fetch(`views/datlich/${view}.php`)
+            .then(res => res.text())
+            .then(html => {
+                const content = document.getElementById('dl-content');
+                const tableWrap = document.getElementById('dl-table-wrap');
+                if (content) content.innerHTML = html;
+                if (tableWrap) tableWrap.style.display = 'none';
+                if (view === 'add' && typeof initAddDatLichForm === 'function') {
+                    initAddDatLichForm();
+                }
+                if (view === 'edit' && typeof window.initEditDatLichForm === 'function') {
+                    window.initEditDatLichForm();
+                }
+                if (view !== 'add' && madl) {
+                    document.querySelectorAll('[name="madl"]').forEach(e => e.value = madl);
+                }
+            });
+    }
+    // Gán lại sự kiện cho các nút Sửa/Xoá
+    document.getElementById('dl-tbody').addEventListener('click', function(e) {
+        if (e.target.tagName === 'A' && e.target.textContent.includes('Sửa')) {
+            const madl = e.target.getAttribute('href').split('madl=')[1];
+            loadDLView('edit', madl);
+            e.preventDefault();
+        }
+        if (e.target.tagName === 'A' && e.target.textContent.includes('Xóa')) {
+            const madl = e.target.getAttribute('href').split('madl=')[1];
+            loadDLView('delete', madl);
+            e.preventDefault();
+        }
+    });
+    </script>
 </body>
 </html>

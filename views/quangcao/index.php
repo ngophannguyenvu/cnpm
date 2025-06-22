@@ -112,4 +112,37 @@
         <tbody id="quangcao-list-tbody"></tbody>
     </table>
 </div>
-<script src="views/quangcao/quangcao.js"></script> 
+<script src="views/quangcao/quangcao.js"></script>
+<script>
+function loadQuangCaoView(view, maqc = '') {
+    fetch(`views/quangcao/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            document.body.innerHTML += '<div id="qc-content-modal">' + html + '</div>';
+            if (view === 'edit' && typeof window.initEditQuangCaoForm === 'function') {
+                window.initEditQuangCaoForm();
+            }
+            if (view !== 'add' && maqc) {
+                document.querySelectorAll('[name="maqc"]').forEach(e => e.value = maqc);
+            }
+        });
+}
+
+document.querySelector('.quangcao-add').onclick = function() {
+    loadQuangCaoView('add');
+};
+
+document.getElementById('quangcao-list-tbody').onclick = function(e) {
+    if (e.target.classList.contains('quangcao-action-btn')) {
+        const row = e.target.closest('tr');
+        const maqc = row ? row.children[0].textContent.trim() : '';
+        if (e.target.textContent.includes('Sửa')) {
+            loadQuangCaoView('edit', maqc);
+        } else if (e.target.textContent.includes('Xoá')) {
+            loadQuangCaoView('delete', maqc);
+        } else if (e.target.textContent.includes('Chi tiết')) {
+            loadQuangCaoView('detail', maqc);
+        }
+    }
+};
+</script> 

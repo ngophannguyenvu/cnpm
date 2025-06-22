@@ -86,48 +86,4 @@
         </div>
         <div class="dl-form-msg" id="dl-edit-msg"></div>
     </form>
-</div>
-<script>
-// Lấy madl từ query parameter hoặc input ẩn
-const urlParams = new URLSearchParams(window.location.search);
-const madl = urlParams.get('madl') || (document.querySelector('[name="madl"]')?.value || '');
-
-if (!madl) {
-    document.getElementById('dl-del-msg').textContent = 'Mã ĐL không hợp lệ!';
-    document.getElementById('dl-del-msg').classList.add('error');
-    return;
-}
-
-document.getElementById('dl-del-madl').textContent = madl;
-
-document.getElementById('dl-del-confirm').onclick = function() {
-    const msg = document.getElementById('dl-del-msg');
-    msg.textContent = '';
-    msg.className = 'dl-del-msg';
-
-    fetch('http://localhost:86/cnpm-BE/api/datlich/' + encodeURIComponent(madl), {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(res => {
-        if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-    })
-    .then(data => {
-        if (data.message) {
-            msg.textContent = data.message;
-            msg.classList.add('success');
-            setTimeout(() => document.querySelector('.dl-back').click(), 1000);
-        } else {
-            msg.textContent = data.error || 'Xoá thất bại!';
-            msg.classList.add('error');
-        }
-    })
-    .catch(error => {
-        msg.textContent = error.message.includes('Failed to fetch') ? 'Lỗi kết nối máy chủ hoặc vấn đề CORS!' : error.message;
-        msg.classList.add('error');
-    });
-};
-</script> 
+</div> 

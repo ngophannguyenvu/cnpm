@@ -70,6 +70,18 @@
 <form class="hd-form" id="hd-edit-form">
     <div class="hd-form-title">Sửa hóa đơn</div>
     <div class="hd-msg" id="hd-edit-msg"></div>
+    <!-- Thông tin cũ -->
+    <div id="hd-old-info" style="background:#ffe4ec;padding:12px 10px 10px 10px;border-radius:8px;margin-bottom:18px;display:none">
+        <div style="color:#e73370;font-weight:bold;margin-bottom:6px">Thông tin cũ:</div>
+        <div><b>Mã hóa đơn:</b> <span id="hd-old-mahd"></span></div>
+        <div><b>Ngày lập:</b> <span id="hd-old-ngay"></span></div>
+        <div><b>Tổng tiền:</b> <span id="hd-old-tongtien"></span></div>
+        <div><b>Trạng thái:</b> <span id="hd-old-trangthai"></span></div>
+        <div><b>Mã đặt lịch:</b> <span id="hd-old-madl"></span></div>
+        <div><b>Mã người dùng:</b> <span id="hd-old-manguoidung"></span></div>
+        <div><b>Mã phòng:</b> <span id="hd-old-maphong"></span></div>
+        <div><b>Mã phương thức:</b> <span id="hd-old-mapt"></span></div>
+    </div>
     <input type="hidden" name="mahd">
     <label for="ngay">Ngày lập</label>
     <input type="date" id="ngay" name="ngay" required>
@@ -79,8 +91,17 @@
     <select id="trangthai" name="trangthai" required>
         <option value="">-- Chọn trạng thái --</option>
         <option value="1">Đã thanh toán</option>
-        <option value="0">Chưa thanh toán</option>
+        <option value="3">Chờ thanh toán</option>
+        <option value="4">Đang chờ</option>
     </select>
+    <label for="madl">Mã đặt lịch</label>
+    <input type="number" id="madl" name="madl" required>
+    <label for="manguoidung">Mã người dùng</label>
+    <input type="number" id="manguoidung" name="manguoidung" required>
+    <label for="maphong">Mã phòng</label>
+    <input type="number" id="maphong" name="maphong" required>
+    <label for="mapt">Mã phương thức</label>
+    <input type="number" id="mapt" name="mapt" required>
     <button type="submit" class="hd-btn">Lưu thay đổi</button>
     <button type="button" class="hd-btn hd-back">Quay lại</button>
 </form>
@@ -102,7 +123,7 @@ hdEditForm.onsubmit = function(e) {
     e.preventDefault();
     hdEditMsg.textContent = 'Đang xử lý...';
     hdEditMsg.className = 'hd-msg';
-    fetch('http://localhost:86/cnpm-be/api/hoadonvathanhtoan/' + hdEditForm.mahd.value, {
+    fetch('http://localhost:86/cnpm-be/api/hoaDonVaThanhToan/' + hdEditForm.mahd.value, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -127,4 +148,17 @@ hdEditForm.onsubmit = function(e) {
         hdEditMsg.className = 'hd-msg error';
     });
 };
+
+// Tự động lấy danh sách trạng thái từ API và render option
+fetch('http://localhost:86/cnpm-be/api/trangthai')
+  .then(res => res.json())
+  .then(data => {
+    const select = document.getElementById('trangthai');
+    const current = select.value;
+    select.innerHTML = '<option value="">-- Chọn trạng thái --</option>';
+    data.forEach(item => {
+      select.innerHTML += `<option value="${item.Matrangthai}">${item.Tentrangthai}</option>`;
+    });
+    if (current) select.value = current;
+  });
 </script> 

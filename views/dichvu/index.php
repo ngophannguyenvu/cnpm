@@ -83,6 +83,9 @@ function loadDVView(view, madv = '') {
             if (view === 'add' && typeof initAddDichVuForm === 'function') {
                 initAddDichVuForm();
             }
+            if (view === 'edit' && typeof window.initEditDichVuForm === 'function') {
+                window.initEditDichVuForm();
+            }
             if (view !== 'add' && madv) {
                 document.querySelectorAll('[name="madv"]').forEach(e => e.value = madv);
             }

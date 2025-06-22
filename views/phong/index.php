@@ -147,6 +147,9 @@ function loadPhongView(view, maphong = '') {
             if (view === 'add' && typeof initAddPhongForm === 'function') {
                 initAddPhongForm();
             }
+            if (view === 'edit' && typeof window.initEditPhongForm === 'function') {
+                window.initEditPhongForm();
+            }
             if (view !== 'add' && maphong) {
                 document.querySelectorAll('[name="maphong"]').forEach(e => e.value = maphong);
                 if (view === 'detail') {

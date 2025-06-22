@@ -78,4 +78,68 @@ function initAddUserForm() {
 }
 window.initAddUserForm = initAddUserForm;
 
+function initEditUserForm() {
+    const form = document.getElementById('user-edit-form');
+    const msg = document.getElementById('user-edit-msg');
+    if (!form) return;
+    const manguoidung = form.manguoidung.value;
+    if (typeof _userData !== 'undefined' && manguoidung) {
+        const user = (_userData || []).find(x => x.Manguoidung == manguoidung);
+        if (user) {
+            form.hoten.value = user.Hoten || '';
+            form.sdt.value = user.SDT || '';
+            form.diachi.value = user.DiaChi || '';
+            form.email.value = user.Email || '';
+            form.ngaysinh.value = user.Ngaysinh || '';
+            form.gioitinh.value = user.Gioitinh || '';
+            // Hiển thị thông tin cũ
+            const oldInfo = document.getElementById('user-old-info');
+            if (oldInfo) {
+                oldInfo.style.display = '';
+                document.getElementById('user-old-manguoidung').textContent = user.Manguoidung || '';
+                document.getElementById('user-old-hoten').textContent = user.Hoten || '';
+                document.getElementById('user-old-sdt').textContent = user.SDT || '';
+                document.getElementById('user-old-diachi').textContent = user.DiaChi || '';
+                document.getElementById('user-old-email').textContent = user.Email || '';
+                document.getElementById('user-old-ngaysinh').textContent = user.Ngaysinh || '';
+                document.getElementById('user-old-gioitinh').textContent = user.Gioitinh || '';
+            }
+        }
+    }
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        msg.textContent = 'Đang xử lý...';
+        msg.className = 'user-msg';
+        fetch('http://localhost:86/cnpm-BE/api/user/updateUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                manguoidung: form.manguoidung.value,
+                hoten: form.hoten.value,
+                sdt: form.sdt.value,
+                diachi: form.diachi.value,
+                email: form.email.value,
+                ngaysinh: form.ngaysinh.value,
+                gioitinh: form.gioitinh.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success || data.status === 'success' || data.message) {
+                msg.textContent = data.message || 'Cập nhật người dùng thành công!';
+                msg.className = 'user-msg success';
+                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); fetchUserList(); }, 1000);
+            } else {
+                msg.textContent = data.message || 'Cập nhật thất bại!';
+                msg.className = 'user-msg error';
+            }
+        })
+        .catch(() => {
+            msg.textContent = 'Lỗi kết nối máy chủ!';
+            msg.className = 'user-msg error';
+        });
+    };
+}
+window.initEditUserForm = initEditUserForm;
+
 fetchUserList(); 

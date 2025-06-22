@@ -105,4 +105,82 @@ if (btnAdd) {
                 if (typeof initAddDatLichForm === 'function') initAddDatLichForm();
             });
     };
-} 
+}
+
+function initEditDatLichForm() {
+    const form = document.getElementById('dl-edit-form');
+    const msg = document.getElementById('dl-edit-msg');
+    if (!form) return;
+    const madl = form.madl.value;
+    if (typeof _dlData !== 'undefined' && madl) {
+        const dl = (_dlData || []).find(x => x.MaDL == madl);
+        if (dl) {
+            form.madl.value = dl.MaDL || '';
+            form.manguoidung.value = dl.Manguoidung || '';
+            // Chuyển đổi thời gian về dạng datetime-local
+            if (dl.Thoigiandatlich) {
+                let dt = dl.Thoigiandatlich.replace(' ', 'T');
+                if (dt.length === 16) dt += ':00';
+                form.thoigiandatlich.value = dt;
+            } else {
+                form.thoigiandatlich.value = '';
+            }
+            form.trangthai.value = dl.Trangthai_ || '';
+            // Hiển thị thông tin cũ
+            const oldInfo = document.getElementById('dl-old-info');
+            if (oldInfo) {
+                oldInfo.style.display = '';
+                document.getElementById('dl-old-madl').textContent = dl.MaDL || '';
+                document.getElementById('dl-old-manguoidung').textContent = dl.Manguoidung || '';
+                document.getElementById('dl-old-thoigiandatlich').textContent = dl.Thoigiandatlich || '';
+                document.getElementById('dl-old-trangthai').textContent = dl.Trangthai_ || '';
+            }
+        }
+    }
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        msg.textContent = '';
+        msg.className = 'dl-form-msg';
+        const manguoidung = form.manguoidung.value.trim();
+        const thoigiandatlichInput = form.thoigiandatlich.value;
+        const trangthai = form.trangthai.value.trim();
+        if (!manguoidung || !thoigiandatlichInput || !trangthai) {
+            msg.textContent = 'Vui lòng nhập đầy đủ thông tin!';
+            msg.classList.add('error');
+            return;
+        }
+        let thoigiandatlich;
+        try {
+            thoigiandatlich = new Date(thoigiandatlichInput).toISOString().slice(0, 19).replace('T', ' ');
+        } catch (error) {
+            msg.textContent = 'Định dạng thời gian không hợp lệ!';
+            msg.classList.add('error');
+            return;
+        }
+        fetch('http://localhost:86/cnpm-be/api/datlich/' + form.madl.value, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Manguoidung: manguoidung,
+                Thoigiandatlich: thoigiandatlich,
+                Trangthai: trangthai
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.message) {
+                msg.textContent = data.message;
+                msg.classList.add('success');
+                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); fetchDatLichList(); }, 1000);
+            } else {
+                msg.textContent = data.error || (data.errors ? Object.values(data.errors).join(', ') : 'Cập nhật thất bại!');
+                msg.classList.add('error');
+            }
+        })
+        .catch(() => {
+            msg.textContent = 'Lỗi kết nối máy chủ hoặc vấn đề CORS!';
+            msg.classList.add('error');
+        });
+    };
+}
+window.initEditDatLichForm = initEditDatLichForm; 

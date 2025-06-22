@@ -70,6 +70,14 @@
 <form class="phong-form" id="phong-edit-form">
     <div class="phong-form-title">Sửa phòng</div>
     <div class="phong-msg" id="phong-edit-msg"></div>
+    <!-- Thông tin cũ -->
+    <div id="phong-old-info" style="background:#ffe4ec;padding:12px 10px 10px 10px;border-radius:8px;margin-bottom:18px;display:none">
+        <div style="color:#e73370;font-weight:bold;margin-bottom:6px">Thông tin cũ:</div>
+        <div><b>Mã phòng:</b> <span id="phong-old-maphong"></span></div>
+        <div><b>Tên phòng:</b> <span id="phong-old-tenphong"></span></div>
+        <div><b>Loại phòng:</b> <span id="phong-old-loaiphong"></span></div>
+        <div><b>Mã trạng thái phòng:</b> <span id="phong-old-matrangthaiP"></span></div>
+    </div>
     <input type="hidden" name="maphong">
     <label for="tenphong">Tên phòng</label>
     <input type="text" id="tenphong" name="tenphong" required>
@@ -79,48 +87,4 @@
     <input type="text" id="matrangthaiP" name="matrangthaiP" required>
     <button type="submit" class="phong-btn">Lưu thay đổi</button>
     <button type="button" class="phong-btn phong-back">Quay lại</button>
-</form>
-<script>
-document.querySelector('.phong-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const phongEditForm = document.getElementById('phong-edit-form');
-const phongEditMsg = document.getElementById('phong-edit-msg');
-if (typeof _phongData !== 'undefined' && phongEditForm.maphong.value) {
-    const phong = (_phongData || []).find(x => x.Maphong == phongEditForm.maphong.value);
-    if (phong) {
-        phongEditForm.tenphong.value = phong.Tenphong || '';
-        phongEditForm.loaiphong.value = phong.Loaiphong || '';
-        phongEditForm.matrangthaiP.value = phong.MatrangthaiP || '';
-    }
-}
-phongEditForm.onsubmit = function(e) {
-    e.preventDefault();
-    phongEditMsg.textContent = 'Đang xử lý...';
-    phongEditMsg.className = 'phong-msg';
-    fetch('http://localhost:86/cnpm-BE/api/phong/' + phongEditForm.maphong.value, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            Tenphong: phongEditForm.tenphong.value,
-            Loaiphong: phongEditForm.loaiphong.value,
-            MatrangthaiP: phongEditForm.matrangthaiP.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success' || data.message) {
-            phongEditMsg.textContent = data.message || 'Cập nhật phòng thành công!';
-            phongEditMsg.className = 'phong-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            phongEditMsg.textContent = data.message || 'Cập nhật thất bại!';
-            phongEditMsg.className = 'phong-msg error';
-        }
-    })
-    .catch(() => {
-        phongEditMsg.textContent = 'Lỗi kết nối máy chủ!';
-        phongEditMsg.className = 'phong-msg error';
-    });
-};
-</script> 
+</form> 

@@ -145,6 +145,9 @@ function loadPTView(view, mapt = '') {
             if (view === 'add' && typeof initAddPhuongThucForm === 'function') {
                 initAddPhuongThucForm();
             }
+            if (view === 'edit' && typeof window.initEditPhuongThucForm === 'function') {
+                window.initEditPhuongThucForm();
+            }
             if (view !== 'add' && mapt) {
                 document.querySelectorAll('[name="mapt"]').forEach(e => e.value = mapt);
                 if (view === 'detail') {

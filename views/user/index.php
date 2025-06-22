@@ -127,7 +127,12 @@ function loadUserView(view, manguoidung = '') {
             if (view === 'add' && typeof initAddUserForm === 'function') {
                 initAddUserForm();
             }
-            // Có thể bổ sung logic cho edit/detail nếu cần
+            if (view === 'edit' && typeof window.initEditUserForm === 'function') {
+                window.initEditUserForm();
+            }
+            if (view !== 'add' && manguoidung) {
+                document.querySelectorAll('[name="manguoidung"]').forEach(e => e.value = manguoidung);
+            }
         });
 }
 

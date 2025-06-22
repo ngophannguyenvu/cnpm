@@ -15,6 +15,13 @@
 <form class="dv-form" id="dv-edit-form">
     <div class="dv-form-title">Sửa dịch vụ</div>
     <div class="dv-msg" id="dv-edit-msg"></div>
+    <div id="dv-old-info" style="background:#ffe4ec;padding:12px 10px 10px 10px;border-radius:8px;margin-bottom:18px;display:none">
+        <div style="color:#e73370;font-weight:bold;margin-bottom:6px">Thông tin cũ:</div>
+        <div><b>Mã DV:</b> <span id="dv-old-madv"></span></div>
+        <div><b>Tên dịch vụ:</b> <span id="dv-old-tendichvu"></span></div>
+        <div><b>Giá:</b> <span id="dv-old-gia"></span></div>
+        <div><b>Mô tả:</b> <span id="dv-old-mota"></span></div>
+    </div>
     <input type="hidden" name="madv">
     <label for="tendichvu">Tên dịch vụ</label>
     <input type="text" id="tendichvu" name="tendichvu" required>
@@ -24,48 +31,4 @@
     <textarea id="mota" name="mota" required></textarea>
     <button type="submit" class="dv-btn">Lưu thay đổi</button>
     <button type="button" class="dv-btn dv-back">Quay lại</button>
-</form>
-<script>
-document.querySelector('.dv-back').onclick = function() {
-    if (typeof backToDVMain === 'function') backToDVMain();
-};
-const dvEditForm = document.getElementById('dv-edit-form');
-const dvEditMsg = document.getElementById('dv-edit-msg');
-if (typeof _dvData !== 'undefined' && dvEditForm.madv.value) {
-    const dv = (_dvData || []).find(x => x.MaDV == dvEditForm.madv.value);
-    if (dv) {
-        dvEditForm.tendichvu.value = dv.Tendichvu || '';
-        dvEditForm.gia.value = dv.Gia || '';
-        dvEditForm.mota.value = dv.MoTa || '';
-    }
-}
-dvEditForm.onsubmit = function(e) {
-    e.preventDefault();
-    dvEditMsg.textContent = 'Đang xử lý...';
-    dvEditMsg.className = 'dv-msg';
-    fetch('http://localhost:86/cnpm-be/api/dichvu/' + dvEditForm.madv.value, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            Tendichvu: dvEditForm.tendichvu.value,
-            Gia: dvEditForm.gia.value,
-            MoTa: dvEditForm.mota.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message === 'Product updated successfully') {
-            dvEditMsg.textContent = 'Cập nhật dịch vụ thành công!';
-            dvEditMsg.className = 'dv-msg success';
-            setTimeout(() => { if (typeof backToDVMain === 'function') backToDVMain(); }, 1000);
-        } else {
-            dvEditMsg.textContent = data.error || data.message || 'Cập nhật thất bại!';
-            dvEditMsg.className = 'dv-msg error';
-        }
-    })
-    .catch(() => {
-        dvEditMsg.textContent = 'Lỗi kết nối máy chủ!';
-        dvEditMsg.className = 'dv-msg error';
-    });
-};
-</script> 
+</form> 

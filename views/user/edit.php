@@ -70,6 +70,17 @@
 <form class="user-form" id="user-edit-form">
     <div class="user-form-title">Sửa người dùng</div>
     <div class="user-msg" id="user-edit-msg"></div>
+    <!-- Thông tin cũ -->
+    <div id="user-old-info" style="background:#ffe4ec;padding:12px 10px 10px 10px;border-radius:8px;margin-bottom:18px;display:none">
+        <div style="color:#e73370;font-weight:bold;margin-bottom:6px">Thông tin cũ:</div>
+        <div><b>Mã người dùng:</b> <span id="user-old-manguoidung"></span></div>
+        <div><b>Họ tên:</b> <span id="user-old-hoten"></span></div>
+        <div><b>SĐT:</b> <span id="user-old-sdt"></span></div>
+        <div><b>Địa chỉ:</b> <span id="user-old-diachi"></span></div>
+        <div><b>Email:</b> <span id="user-old-email"></span></div>
+        <div><b>Ngày sinh:</b> <span id="user-old-ngaysinh"></span></div>
+        <div><b>Giới tính:</b> <span id="user-old-gioitinh"></span></div>
+    </div>
     <input type="hidden" name="manguoidung">
     <label for="hoten">Họ tên</label>
     <input type="text" id="hoten" name="hoten" required>
@@ -90,55 +101,4 @@
     </select>
     <button type="submit" class="user-btn">Lưu thay đổi</button>
     <button type="button" class="user-btn user-back">Quay lại</button>
-</form>
-<script>
-document.querySelector('.user-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const userEditForm = document.getElementById('user-edit-form');
-const userEditMsg = document.getElementById('user-edit-msg');
-if (typeof _userData !== 'undefined' && userEditForm.manguoidung.value) {
-    const user = (_userData || []).find(x => x.Manguoidung == userEditForm.manguoidung.value);
-    if (user) {
-        userEditForm.hoten.value = user.Hoten || '';
-        userEditForm.sdt.value = user.SDT || '';
-        userEditForm.diachi.value = user.DiaChi || '';
-        userEditForm.email.value = user.Email || '';
-        userEditForm.ngaysinh.value = user.Ngaysinh || '';
-        userEditForm.gioitinh.value = user.Gioitinh || '';
-    }
-}
-userEditForm.onsubmit = function(e) {
-    e.preventDefault();
-    userEditMsg.textContent = 'Đang xử lý...';
-    userEditMsg.className = 'user-msg';
-    fetch('http://localhost:86/cnpm-BE/api/user/updateUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            manguoidung: userEditForm.manguoidung.value,
-            hoten: userEditForm.hoten.value,
-            sdt: userEditForm.sdt.value,
-            diachi: userEditForm.diachi.value,
-            email: userEditForm.email.value,
-            ngaysinh: userEditForm.ngaysinh.value,
-            gioitinh: userEditForm.gioitinh.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success' || data.message) {
-            userEditMsg.textContent = data.message || 'Cập nhật người dùng thành công!';
-            userEditMsg.className = 'user-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            userEditMsg.textContent = data.message || 'Cập nhật thất bại!';
-            userEditMsg.className = 'user-msg error';
-        }
-    })
-    .catch(() => {
-        userEditMsg.textContent = 'Lỗi kết nối máy chủ!';
-        userEditMsg.className = 'user-msg error';
-    });
-};
-</script> 
+</form> 

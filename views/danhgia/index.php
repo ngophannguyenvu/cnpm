@@ -149,6 +149,9 @@ function loadDGView(view, madg = '') {
             if (view === 'add' && typeof initAddDanhGiaForm === 'function') {
                 initAddDanhGiaForm();
             }
+            if (view === 'edit' && typeof window.initEditDanhGiaForm === 'function') {
+                window.initEditDanhGiaForm();
+            }
             if (view !== 'add' && madg) {
                 document.querySelectorAll('[name="madg"]').forEach(e => e.value = madg);
                 if (view === 'detail') {

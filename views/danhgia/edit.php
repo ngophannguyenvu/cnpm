@@ -69,6 +69,16 @@
 </style>
 <div class="dg-form-wrap">
     <div class="dg-form-title">Sửa Đánh giá</div>
+    <!-- Thông tin cũ -->
+    <div id="dg-old-info" style="background:#ffe4ec;padding:12px 10px 10px 10px;border-radius:8px;margin-bottom:18px;display:none">
+        <div style="color:#e73370;font-weight:bold;margin-bottom:6px">Thông tin cũ:</div>
+        <div><b>Mã ĐG:</b> <span id="dg-old-madg"></span></div>
+        <div><b>Số sao:</b> <span id="dg-old-danhgiasao"></span></div>
+        <div><b>Nhận xét:</b> <span id="dg-old-nhanxet"></span></div>
+        <div><b>Ngày đánh giá:</b> <span id="dg-old-ngaydanhgia"></span></div>
+        <div><b>Mã người dùng:</b> <span id="dg-old-manguoidung"></span></div>
+        <div><b>Mã hóa đơn:</b> <span id="dg-old-mahd"></span></div>
+    </div>
     <form class="dg-form" id="dg-edit-form" autocomplete="off">
         <label>Mã ĐG:
             <input type="text" name="madg" required readonly>
@@ -94,43 +104,4 @@
         </div>
         <div class="dg-form-msg" id="dg-edit-msg"></div>
     </form>
-</div>
-<script>
-document.getElementById('dg-edit-form').onsubmit = function(e) {
-    e.preventDefault();
-    const madg = this.madg.value.trim();
-    const danhgiasao = this.danhgiasao.value.trim();
-    const nhanxet = this.nhanxet.value.trim();
-    const ngaydanhgia = this.ngaydanhgia.value;
-    const manguoidung = this.manguoidung.value.trim();
-    const mahd = this.mahd.value.trim();
-    const msg = document.getElementById('dg-edit-msg');
-    msg.textContent = '';
-    msg.className = 'dg-form-msg';
-    if (!madg || !danhgiasao || !nhanxet || !ngaydanhgia || !manguoidung || !mahd) {
-        msg.textContent = 'Vui lòng nhập đầy đủ thông tin!';
-        msg.classList.add('error');
-        return;
-    }
-    fetch('http://localhost:86/cnpm-BE/api/danhgia/' + encodeURIComponent(madg), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Danhgiasao: danhgiasao, Nhanxet: nhanxet, Ngaydanhgia: ngaydanhgia, Manguoidung: manguoidung, MaHD: mahd })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message) {
-            msg.textContent = data.message;
-            msg.classList.add('success');
-            setTimeout(() => document.querySelector('.dg-back').click(), 1000);
-        } else {
-            msg.textContent = data.error || 'Cập nhật thất bại!';
-            msg.classList.add('error');
-        }
-    })
-    .catch(() => {
-        msg.textContent = 'Lỗi kết nối máy chủ!';
-        msg.classList.add('error');
-    });
-};
-</script> 
+</div> 

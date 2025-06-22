@@ -150,9 +150,9 @@ function loadHDView(view, mahd = '') {
             }
             if (view !== 'add' && mahd) {
                 document.querySelectorAll('[name="mahd"]').forEach(e => e.value = mahd);
-                if (view === 'detail') {
-                    document.getElementById('hd-mahd').textContent = mahd;
-                }
+            }
+            if (view === 'edit' && typeof window.initEditHoaDonForm === 'function') {
+                window.initEditHoaDonForm();
             }
         });
 }

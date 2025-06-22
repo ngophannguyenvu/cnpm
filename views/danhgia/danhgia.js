@@ -40,4 +40,75 @@ function initAddDanhGiaForm() {
             dgAddMsg.className = 'dg-form-msg error';
         });
     };
-} 
+}
+
+function initEditDanhGiaForm() {
+    const form = document.getElementById('dg-edit-form');
+    const msg = document.getElementById('dg-edit-msg');
+    if (!form) return;
+    const madg = form.madg.value;
+    if (typeof _dgData !== 'undefined' && madg) {
+        const dg = (_dgData || []).find(x => x.MaDG == madg);
+        if (dg) {
+            form.madg.value = dg.MaDG || '';
+            form.danhgiasao.value = dg.Danhgiasao || '';
+            form.nhanxet.value = dg.Nhanxet || '';
+            form.ngaydanhgia.value = dg.Ngaydanhgia || '';
+            form.manguoidung.value = dg.Manguoidung || '';
+            form.mahd.value = dg.MaHD || '';
+            // Hiển thị thông tin cũ
+            const oldInfo = document.getElementById('dg-old-info');
+            if (oldInfo) {
+                oldInfo.style.display = '';
+                document.getElementById('dg-old-madg').textContent = dg.MaDG || '';
+                document.getElementById('dg-old-danhgiasao').textContent = dg.Danhgiasao || '';
+                document.getElementById('dg-old-nhanxet').textContent = dg.Nhanxet || '';
+                document.getElementById('dg-old-ngaydanhgia').textContent = dg.Ngaydanhgia || '';
+                document.getElementById('dg-old-manguoidung').textContent = dg.Manguoidung || '';
+                document.getElementById('dg-old-mahd').textContent = dg.MaHD || '';
+            }
+        }
+    }
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        msg.textContent = '';
+        msg.className = 'dg-form-msg';
+        const danhgiasao = form.danhgiasao.value.trim();
+        const nhanxet = form.nhanxet.value.trim();
+        const ngaydanhgia = form.ngaydanhgia.value;
+        const manguoidung = form.manguoidung.value.trim();
+        const mahd = form.mahd.value.trim();
+        if (!madg || !danhgiasao || !nhanxet || !ngaydanhgia || !manguoidung || !mahd) {
+            msg.textContent = 'Vui lòng nhập đầy đủ thông tin!';
+            msg.classList.add('error');
+            return;
+        }
+        fetch('http://localhost:86/cnpm-be/api/danhgia/' + form.madg.value, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Danhgiasao: danhgiasao,
+                Nhanxet: nhanxet,
+                Ngaydanhgia: ngaydanhgia,
+                Manguoidung: manguoidung,
+                MaHD: mahd
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.message && data.message.toLowerCase().includes('success')) {
+                msg.textContent = data.message || 'Cập nhật đánh giá thành công!';
+                msg.className = 'dg-form-msg success';
+                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchDanhGia === 'function') fetchDanhGia(); }, 1000);
+            } else {
+                msg.textContent = data.error || data.message || 'Cập nhật thất bại!';
+                msg.className = 'dg-form-msg error';
+            }
+        })
+        .catch(() => {
+            msg.textContent = 'Lỗi kết nối máy chủ!';
+            msg.className = 'dg-form-msg error';
+        });
+    };
+}
+window.initEditDanhGiaForm = initEditDanhGiaForm; 

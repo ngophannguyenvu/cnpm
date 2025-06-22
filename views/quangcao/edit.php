@@ -70,6 +70,18 @@
 <form class="qc-form" id="qc-edit-form">
     <div class="qc-form-title">Sửa quảng cáo</div>
     <div class="qc-msg" id="qc-edit-msg"></div>
+    <!-- Thông tin cũ -->
+    <div id="qc-old-info" style="background:#ffe4ec;padding:12px 10px 10px 10px;border-radius:8px;margin-bottom:18px;display:none">
+        <div style="color:#e73370;font-weight:bold;margin-bottom:6px">Thông tin cũ:</div>
+        <div><b>Mã quảng cáo:</b> <span id="qc-old-maqc"></span></div>
+        <div><b>Tên quảng cáo:</b> <span id="qc-old-tenqc"></span></div>
+        <div><b>Nội dung:</b> <span id="qc-old-noidung"></span></div>
+        <div><b>Loại quảng cáo:</b> <span id="qc-old-loaiquangcao"></span></div>
+        <div><b>Hình ảnh:</b> <span id="qc-old-hinhanh"></span></div>
+        <div><b>Ngày bắt đầu:</b> <span id="qc-old-ngaybd"></span></div>
+        <div><b>Ngày kết thúc:</b> <span id="qc-old-ngaykt"></span></div>
+        <div><b>Mã người dùng:</b> <span id="qc-old-manguoidung"></span></div>
+    </div>
     <input type="hidden" name="maqc">
     <label for="tenqc">Tên quảng cáo</label>
     <input type="text" id="tenqc" name="tenqc" required>
@@ -87,56 +99,4 @@
     <input type="text" id="manguoidung" name="manguoidung" required>
     <button type="submit" class="qc-btn">Lưu thay đổi</button>
     <button type="button" class="qc-btn qc-back">Quay lại</button>
-</form>
-<script>
-document.querySelector('.qc-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const qcEditForm = document.getElementById('qc-edit-form');
-const qcEditMsg = document.getElementById('qc-edit-msg');
-if (typeof _quangCaoData !== 'undefined' && qcEditForm.maqc.value) {
-    const qc = (_quangCaoData || []).find(x => x.Maquangcao == qcEditForm.maqc.value || x.MaQC == qcEditForm.maqc.value);
-    if (qc) {
-        qcEditForm.tenqc.value = qc.Tieude || qc.TenQC || '';
-        qcEditForm.noidung.value = qc.Noidung || '';
-        qcEditForm.loaiquangcao.value = qc.Loaiquangcao || '';
-        qcEditForm.hinhanh.value = qc.Image || qc.HinhAnh || '';
-        qcEditForm.ngaybd.value = qc.Ngaybatdau || qc.NgayBatDau || '';
-        qcEditForm.ngaykt.value = qc.Ngayketthuc || qc.NgayKetThuc || '';
-        qcEditForm.manguoidung.value = qc.Manguoidung || '';
-    }
-}
-qcEditForm.onsubmit = function(e) {
-    e.preventDefault();
-    qcEditMsg.textContent = 'Đang xử lý...';
-    qcEditMsg.className = 'qc-msg';
-    fetch('http://localhost:86/cnpm-BE/api/quangcao/' + qcEditForm.maqc.value, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            Tieude: qcEditForm.tenqc.value,
-            Noidung: qcEditForm.noidung.value,
-            Loaiquangcao: qcEditForm.loaiquangcao.value,
-            Image: qcEditForm.hinhanh.value,
-            Ngaybatdau: qcEditForm.ngaybd.value,
-            Ngayketthuc: qcEditForm.ngaykt.value,
-            Manguoidung: qcEditForm.manguoidung.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message || data.success || data.status === 'success') {
-            qcEditMsg.textContent = data.message || 'Cập nhật quảng cáo thành công!';
-            qcEditMsg.className = 'qc-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            qcEditMsg.textContent = data.message || 'Cập nhật thất bại!';
-            qcEditMsg.className = 'qc-msg error';
-        }
-    })
-    .catch(() => {
-        qcEditMsg.textContent = 'Lỗi kết nối máy chủ!';
-        qcEditMsg.className = 'qc-msg error';
-    });
-};
-</script> 
+</form> 
