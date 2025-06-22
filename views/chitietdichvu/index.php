@@ -91,6 +91,7 @@
     <div id="ctdv-content"></div>
 </div>
 
+<script src="views/chitietdichvu/chitietdichvu.js"></script>
 <script>
 let _ctdvData = null;
 const ctdvTbody = document.getElementById('ctdv-tbody');
@@ -139,6 +140,9 @@ function loadCTDVView(view, madl = '', madv = '') {
             ctdvContent.innerHTML = html;
             ctdvTableWrap.style.display = 'none';
             ctdvContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddCTDVForm === 'function') {
+                initAddCTDVForm();
+            }
             if (view !== 'add' && madl && madv) {
                 document.querySelectorAll('[name="madl"]').forEach(e => e.value = madl);
                 document.querySelectorAll('[name="madv"]').forEach(e => e.value = madv);

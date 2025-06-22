@@ -70,6 +70,8 @@
 <form class="tt-form" id="tt-add-form">
     <div class="tt-form-title">Thêm trạng thái mới</div>
     <div class="tt-msg" id="tt-add-msg"></div>
+    <label for="matt">Mã trạng thái</label>
+    <input type="text" id="matt" name="matt" required>
     <label for="tentt">Tên trạng thái</label>
     <input type="text" id="tentt" name="tentt" required>
     <button type="submit" class="tt-btn">Thêm trạng thái</button>
@@ -85,7 +87,7 @@ ttAddForm.onsubmit = function(e) {
     e.preventDefault();
     ttAddMsg.textContent = 'Đang xử lý...';
     ttAddMsg.className = 'tt-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthai', {
+    fetch('http://localhost:86/cnpm-be/api/trangthai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -108,4 +110,5 @@ ttAddForm.onsubmit = function(e) {
         ttAddMsg.className = 'tt-msg error';
     });
 };
+if (typeof initAddTrangThaiForm === 'function') initAddTrangThaiForm();
 </script> 

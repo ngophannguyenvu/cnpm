@@ -102,7 +102,7 @@ hdEditForm.onsubmit = function(e) {
     e.preventDefault();
     hdEditMsg.textContent = 'Đang xử lý...';
     hdEditMsg.className = 'hd-msg';
-    fetch('http://localhost:86/cnpm-BE/api/hoadonvathanhtoan/' + hdEditForm.mahd.value, {
+    fetch('http://localhost:86/cnpm-be/api/hoadonvathanhtoan/' + hdEditForm.mahd.value, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

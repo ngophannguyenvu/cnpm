@@ -76,46 +76,16 @@
     <input type="number" id="tongtien" name="tongtien" min="0" required>
     <label for="trangthai">Trạng thái</label>
     <select id="trangthai" name="trangthai" required>
-        <option value="">-- Chọn trạng thái --</option>
         <option value="1">Đã thanh toán</option>
-        <option value="0">Chưa thanh toán</option>
     </select>
+    <label for="madl">Mã đại lý</label>
+    <input type="text" id="madl" name="madl" required>
+    <label for="manguoidung">Mã người dùng</label>
+    <input type="text" id="manguoidung" name="manguoidung" required>
+    <label for="maphong">Mã phòng</label>
+    <input type="text" id="maphong" name="maphong" required>
+    <label for="mapt">Mã phương thức</label>
+    <input type="text" id="mapt" name="mapt" required>
     <button type="submit" class="hd-btn">Thêm hóa đơn</button>
     <button type="button" class="hd-btn hd-back">Quay lại</button>
-</form>
-<script>
-document.querySelector('.hd-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const hdAddForm = document.getElementById('hd-add-form');
-const hdAddMsg = document.getElementById('hd-add-msg');
-hdAddForm.onsubmit = function(e) {
-    e.preventDefault();
-    hdAddMsg.textContent = 'Đang xử lý...';
-    hdAddMsg.className = 'hd-msg';
-    fetch('http://localhost:86/cnpm-BE/api/hoadonvathanhtoan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            NgayThanhToan: hdAddForm.ngay.value,
-            Tongtien: hdAddForm.tongtien.value,
-            Matrangthai: hdAddForm.trangthai.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success') {
-            hdAddMsg.textContent = 'Thêm hóa đơn thành công!';
-            hdAddMsg.className = 'hd-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            hdAddMsg.textContent = data.message || 'Thêm hóa đơn thất bại!';
-            hdAddMsg.className = 'hd-msg error';
-        }
-    })
-    .catch(() => {
-        hdAddMsg.textContent = 'Lỗi kết nối máy chủ!';
-        hdAddMsg.className = 'hd-msg error';
-    });
-};
-</script> 
+</form> 

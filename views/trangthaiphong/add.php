@@ -70,6 +70,8 @@
 <form class="ttp-form" id="ttp-add-form">
     <div class="ttp-form-title">Thêm trạng thái phòng mới</div>
     <div class="ttp-msg" id="ttp-add-msg"></div>
+    <label for="mattp">Mã trạng thái phòng</label>
+    <input type="text" id="mattp" name="mattp" required>
     <label for="tenttp">Tên trạng thái phòng</label>
     <input type="text" id="tenttp" name="tenttp" required>
     <button type="submit" class="ttp-btn">Thêm trạng thái phòng</button>
@@ -85,7 +87,7 @@ ttpAddForm.onsubmit = function(e) {
     e.preventDefault();
     ttpAddMsg.textContent = 'Đang xử lý...';
     ttpAddMsg.className = 'ttp-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthaiphong', {
+    fetch('http://localhost:86/cnpm-be/api/trangthaiphong', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -108,4 +110,5 @@ ttpAddForm.onsubmit = function(e) {
         ttpAddMsg.className = 'ttp-msg error';
     });
 };
+if (typeof initAddTrangThaiPhongForm === 'function') initAddTrangThaiPhongForm();
 </script> 

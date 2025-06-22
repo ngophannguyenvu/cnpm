@@ -91,6 +91,7 @@
     <button class="dg-btn dg-add" id="dg-btn-add">+ Thêm mới</button>
     <div id="dg-content"></div>
 </div>
+<script src="views/danhgia/danhgia.js"></script>
 <script>
 let _dgData = null;
 const dgTbody = document.getElementById('dg-tbody');
@@ -145,6 +146,9 @@ function loadDGView(view, madg = '') {
             dgContent.innerHTML = html;
             dgTableWrap.style.display = 'none';
             dgContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddDanhGiaForm === 'function') {
+                initAddDanhGiaForm();
+            }
             if (view !== 'add' && madg) {
                 document.querySelectorAll('[name="madg"]').forEach(e => e.value = madg);
                 if (view === 'detail') {
@@ -156,7 +160,7 @@ function loadDGView(view, madg = '') {
 function backToMain() {
     dgContent.innerHTML = '';
     dgTableWrap.style.display = '';
-    renderRows(_dgData || []);
+    fetchDanhGia();
 }
 dgContent.addEventListener('click', function(e) {
     if (e.target.classList.contains('dg-back')) backToMain();

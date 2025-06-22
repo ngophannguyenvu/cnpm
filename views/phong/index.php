@@ -90,6 +90,7 @@
     <button class="phong-btn phong-add" id="phong-btn-add">+ Thêm mới</button>
     <div id="phong-content"></div>
 </div>
+<script src="views/phong/phong.js"></script>
 <script>
 let _phongData = null;
 const phongTbody = document.getElementById('phong-tbody');
@@ -122,7 +123,7 @@ function fetchPhong() {
     } else {
         renderRows(_phongData);
     }
-    fetch("http://localhost:86/cnpm-BE/api/phong")
+    fetch("http://localhost:86/cnpm-be/api/phong")
         .then(res => res.json())
         .then(data => {
             _phongData = data;
@@ -143,6 +144,9 @@ function loadPhongView(view, maphong = '') {
             phongContent.innerHTML = html;
             phongTableWrap.style.display = 'none';
             phongContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddPhongForm === 'function') {
+                initAddPhongForm();
+            }
             if (view !== 'add' && maphong) {
                 document.querySelectorAll('[name="maphong"]').forEach(e => e.value = maphong);
                 if (view === 'detail') {
@@ -154,7 +158,7 @@ function loadPhongView(view, maphong = '') {
 function backToMain() {
     phongContent.innerHTML = '';
     phongTableWrap.style.display = '';
-    renderRows(_phongData || []);
+    fetchPhong();
 }
 phongContent.addEventListener('click', function(e) {
     if (e.target.classList.contains('phong-back')) backToMain();

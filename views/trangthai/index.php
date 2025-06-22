@@ -88,6 +88,7 @@
     <button class="tt-btn tt-add" id="tt-btn-add">+ Thêm mới</button>
     <div id="tt-content"></div>
 </div>
+<script src="views/trangthai/trangthai.js"></script>
 <script>
 let _ttData = null;
 const ttTbody = document.getElementById('tt-tbody');
@@ -118,7 +119,7 @@ function fetchTrangThai() {
     } else {
         renderRows(_ttData);
     }
-    fetch("http://localhost:86/cnpm-BE/api/trangthai")
+    fetch("http://localhost:86/cnpm-be/api/trangthai")
         .then(res => res.json())
         .then(data => {
             _ttData = data;
@@ -139,6 +140,9 @@ function loadTTView(view, matt = '') {
             ttContent.innerHTML = html;
             ttTableWrap.style.display = 'none';
             ttContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddTrangThaiForm === 'function') {
+                initAddTrangThaiForm();
+            }
             if (view !== 'add' && matt) {
                 document.querySelectorAll('[name="matt"]').forEach(e => e.value = matt);
                 if (view === 'detail') {

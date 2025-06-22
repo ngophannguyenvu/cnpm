@@ -97,7 +97,7 @@ qcAddForm.onsubmit = function(e) {
     e.preventDefault();
     qcAddMsg.textContent = 'Đang xử lý...';
     qcAddMsg.className = 'qc-msg';
-    fetch('http://localhost:86/cnpm-BE/api/quangcao', {
+    fetch('http://localhost:86/cnpm-be/api/quangcao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,4 +126,5 @@ qcAddForm.onsubmit = function(e) {
         qcAddMsg.className = 'qc-msg error';
     });
 };
+if (typeof initAddQuangCaoForm === 'function') initAddQuangCaoForm();
 </script> 

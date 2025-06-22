@@ -154,68 +154,6 @@
         <button class="dl-btn dl-add" id="dl-btn-add"><i class="fa fa-plus me-2"></i>Thêm mới</button>
         <div id="dl-content"></div>
     </div>
-    <script>
-function loadDatLich() {
-    const tbody = document.getElementById('dl-list');
-    const msg = document.getElementById('dl-msg');
-    console.log('Starting loadDatLich...'); // Debug bước 1
-
-    if (!tbody) {
-        if (msg) {
-            msg.textContent = 'Không tìm thấy bảng dữ liệu!';
-            msg.classList.add('error');
-        }
-        console.error('Element dl-list not found!');
-        return;
-    }
-
-    // Xóa nội dung cũ
-    tbody.innerHTML = '<tr><td colspan="5">Đang tải dữ liệu...</td></tr>';
-    console.log('Cleared tbody, starting fetch...'); // Debug bước 2
-
-    fetch('http://localhost:86/cnpm-BE/api/datlich')
-        .then(res => {
-            console.log('Fetch response status:', res.status); // Debug bước 3
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then(data => {
-            console.log('Fetched Data:', data); // Debug bước 4
-            tbody.innerHTML = '';
-            if (Array.isArray(data) && data.length > 0) {
-                data.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.MaDL || ''}</td>
-                        <td>${item.Manguoidung || ''}</td>
-                        <td>${item.Thoigiandatlich || ''}</td>
-                        <td>${item.Trangthai_ || ''}</td>
-                        <td>
-                            <a href="edit.php?madl=${encodeURIComponent(item.MaDL || '')}">Sửa</a>
-                            <a href="delete.php?madl=${encodeURIComponent(item.MaDL || '')}">Xóa</a>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="5">Không có dữ liệu đặt lịch!</td></tr>';
-            }
-        })
-        .catch(error => {
-            console.error('Fetch Error:', error); // Debug bước 5
-            tbody.innerHTML = '<tr><td colspan="5">Lỗi tải dữ liệu!</td></tr>';
-            if (msg) {
-                msg.textContent = error.message.includes('Failed to fetch') 
-                    ? 'Lỗi kết nối máy chủ hoặc vấn đề CORS!' 
-                    : error.message;
-                msg.classList.add('error');
-            }
-        });
-}
-
-document.addEventListener('DOMContentLoaded', loadDatLich);
-</script>
+    <script src="views/datlich/datlich.js"></script>
 </body>
 </html>

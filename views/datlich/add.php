@@ -83,6 +83,8 @@
 </div>
 
 <script>
+fetchDatLichList();
+
 document.getElementById('dl-add-form').onsubmit = function(e) {
     e.preventDefault();
     const manguoidung = this.manguoidung.value.trim();
@@ -111,7 +113,7 @@ document.getElementById('dl-add-form').onsubmit = function(e) {
     }
 
     // Gửi API POST
-    fetch('http://localhost:86/cnpm-BE/api/datlich', {
+    fetch('http://localhost:86/cnpm-be/api/datlich', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -140,33 +142,16 @@ document.getElementById('dl-add-form').onsubmit = function(e) {
         msg.textContent = error.message.includes('Failed to fetch') ? 'Lỗi kết nối máy chủ hoặc vấn đề CORS!' : error.message;
         msg.classList.add('error');
     });
-
-
-
-    // Gửi API POST
-    fetch('http://localhost:86/cnpm-BE/api/datlich', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            Manguoidung: manguoidung,
-            Thoigiandatlich: thoigiandatlich,
-            Trangthai: trangthai
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.message) {
-            msg.textContent = data.message;
-            msg.classList.add('success');
-            setTimeout(() => window.location.reload(), 1000); // hoặc redirect lại danh sách
-        } else {
-            msg.textContent = data.error || (data.errors ? Object.values(data.errors).join(', ') : 'Thêm thất bại!');
-            msg.classList.add('error');
-        }
-    })
-    .catch(() => {
-        msg.textContent = 'Lỗi kết nối máy chủ!';
-        msg.classList.add('error');
-    });
 };
+
+function initAddDichVuForm() {
+    const dvAddForm = document.getElementById('dv-add-form');
+    if (!dvAddForm) return;
+    dvAddForm.onsubmit = function(e) {
+        e.preventDefault();
+        // ... fetch như cũ
+    };
+}
+
+if (typeof initAddDatLichForm === 'function') initAddDatLichForm();
 </script>

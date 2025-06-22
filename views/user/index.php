@@ -97,94 +97,41 @@
         <button class="user-btn user-add">Thêm mới</button>
         <button class="user-btn user-back">Quay lại</button>
     </div>
-    <div id="user-list-loading">Đang tải dữ liệu...</div>
-    <table class="user-list-table" id="user-list-table" style="display:none">
-        <thead>
-            <tr>
-                <th>Mã</th>
-                <th>Họ tên</th>
-                <th>SĐT</th>
-                <th>Email</th>
-                <th>Giới tính</th>
-                <th>Ngày sinh</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody id="user-list-tbody"></tbody>
-    </table>
+    <div id="user-table-wrap">
+        <div id="user-list-loading">Đang tải dữ liệu...</div>
+        <table class="user-list-table" id="user-list-table" style="display:none">
+            <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Họ tên</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Giới tính</th>
+                    <th>Ngày sinh</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="user-list-tbody"></tbody>
+        </table>
+    </div>
 </div>
+<div id="user-content"></div>
+<script src="views/user/user.js"></script>
 <script>
-let _userData = window._userData || null;
-let _userLoaded = window._userLoaded || false;
-const userListMsg = document.getElementById('user-list-msg');
-const userListLoading = document.getElementById('user-list-loading');
-const userListTable = document.getElementById('user-list-table');
-const userListTbody = document.getElementById('user-list-tbody');
-function renderUserTable() {
-    userListTbody.innerHTML = '';
-    if (!_userData || !_userData.length) {
-        userListTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#ff4081">Không có dữ liệu</td></tr>';
-        return;
-    }
-    _userData.forEach(user => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${user.Manguoidung || ''}</td>
-            <td>${user.Hoten || ''}</td>
-            <td>${user.SDT || ''}</td>
-            <td>${user.Email || ''}</td>
-            <td>${user.Gioitinh || ''}</td>
-            <td>${user.Ngaysinh || ''}</td>
-            <td>
-                <button class="user-action-btn" onclick="viewDetail('${user.Manguoidung}')">Chi tiết</button>
-                <button class="user-action-btn" onclick="editUser('${user.Manguoidung}')">Sửa</button>
-                <button class="user-action-btn" onclick="deleteUser('${user.Manguoidung}')">Xoá</button>
-            </td>
-        `;
-        userListTbody.appendChild(tr);
-    });
-}
-function fetchUserList() {
-    userListLoading.style.display = '';
-    userListTable.style.display = 'none';
-    userListMsg.textContent = '';
-    fetch('http://localhost:86/cnpm-BE/api/user')
-        .then(res => res.json())
-        .then(data => {
-            _userData = Array.isArray(data) ? data : (data.data || []);
-            window._userData = _userData;
-            _userLoaded = true;
-            window._userLoaded = true;
-            renderUserTable();
-            userListLoading.style.display = 'none';
-            userListTable.style.display = '';
-        })
-        .catch(() => {
-            userListMsg.textContent = 'Lỗi tải dữ liệu!';
-            userListMsg.className = 'user-msg error';
-            userListLoading.style.display = 'none';
+function loadUserView(view, manguoidung = '') {
+    fetch(`views/user/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('user-content').innerHTML = html;
+            document.getElementById('user-table-wrap').style.display = 'none';
+            if (view === 'add' && typeof initAddUserForm === 'function') {
+                initAddUserForm();
+            }
+            // Có thể bổ sung logic cho edit/detail nếu cần
         });
 }
-if (!_userLoaded) {
-    fetchUserList();
-} else {
-    userListLoading.style.display = 'none';
-    userListTable.style.display = '';
-    renderUserTable();
-}
-function viewDetail(id) {
-    if (typeof loadView === 'function') loadView('user/detail', { manguoidung: id });
-}
-function editUser(id) {
-    if (typeof loadView === 'function') loadView('user/edit', { manguoidung: id });
-}
-function deleteUser(id) {
-    if (typeof loadView === 'function') loadView('user/delete', { manguoidung: id });
-}
+
 document.querySelector('.user-add').onclick = function() {
-    if (typeof loadView === 'function') loadView('user/add');
-};
-document.querySelector('.user-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
+    loadUserView('add');
 };
 </script> 

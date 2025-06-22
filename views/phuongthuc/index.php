@@ -89,6 +89,7 @@
     <button class="pt-btn pt-add" id="pt-btn-add">+ Thêm mới</button>
     <div id="pt-content"></div>
 </div>
+<script src="views/phuongthuc/phuongthuc.js"></script>
 <script>
 let _ptData = null;
 const ptTbody = document.getElementById('pt-tbody');
@@ -120,7 +121,7 @@ function fetchPhuongThuc() {
     } else {
         renderRows(_ptData);
     }
-    fetch("http://localhost:86/cnpm-BE/api/phuongthuc")
+    fetch("http://localhost:86/cnpm-be/api/phuongthuc")
         .then(res => res.json())
         .then(data => {
             _ptData = data;
@@ -141,6 +142,9 @@ function loadPTView(view, mapt = '') {
             ptContent.innerHTML = html;
             ptTableWrap.style.display = 'none';
             ptContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddPhuongThucForm === 'function') {
+                initAddPhuongThucForm();
+            }
             if (view !== 'add' && mapt) {
                 document.querySelectorAll('[name="mapt"]').forEach(e => e.value = mapt);
                 if (view === 'detail') {
@@ -152,7 +156,7 @@ function loadPTView(view, mapt = '') {
 function backToMain() {
     ptContent.innerHTML = '';
     ptTableWrap.style.display = '';
-    renderRows(_ptData || []);
+    fetchPhuongThuc();
 }
 ptContent.addEventListener('click', function(e) {
     if (e.target.classList.contains('pt-back')) backToMain();

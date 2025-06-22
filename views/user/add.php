@@ -87,6 +87,8 @@
         <option value="Nữ">Nữ</option>
         <option value="Khác">Khác</option>
     </select>
+    <label for="password">Mật khẩu</label>
+    <input type="password" id="password" name="password" required>
     <button type="submit" class="user-btn">Thêm người dùng</button>
     <button type="button" class="user-btn user-back">Quay lại</button>
 </form>
@@ -100,7 +102,7 @@ userAddForm.onsubmit = function(e) {
     e.preventDefault();
     userAddMsg.textContent = 'Đang xử lý...';
     userAddMsg.className = 'user-msg';
-    fetch('http://localhost:86/cnpm-BE/api/user/addUser', {
+    fetch('http://localhost:86/cnpm-be/api/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -109,7 +111,8 @@ userAddForm.onsubmit = function(e) {
             diachi: userAddForm.diachi.value,
             email: userAddForm.email.value,
             ngaysinh: userAddForm.ngaysinh.value,
-            gioitinh: userAddForm.gioitinh.value
+            gioitinh: userAddForm.gioitinh.value,
+            password: userAddForm.password.value
         })
     })
     .then(res => res.json())
@@ -128,4 +131,5 @@ userAddForm.onsubmit = function(e) {
         userAddMsg.className = 'user-msg error';
     });
 };
+if (typeof initAddUserForm === 'function') initAddUserForm();
 </script> 

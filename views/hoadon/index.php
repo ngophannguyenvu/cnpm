@@ -90,6 +90,7 @@
     <button class="hd-btn hd-add" id="hd-btn-add">+ Thêm mới</button>
     <div id="hd-content"></div>
 </div>
+<script src="views/hoadon/hoadon.js"></script>
 <script>
 let _hdData = null;
 const hdTbody = document.getElementById('hd-tbody');
@@ -117,12 +118,13 @@ function renderRows(data) {
 }
 
 function fetchHoaDon() {
+    console.log('fetchHoaDon called');
     if (!_hdData) {
         hdTbody.innerHTML = '<tr><td colspan="5">Đang tải dữ liệu...</td></tr>';
     } else {
         renderRows(_hdData);
     }
-    fetch("http://localhost:86/cnpm-BE/api/hoadonvathanhtoan")
+    fetch("http://localhost:86/cnpm-be/api/hoaDonVaThanhToan")
         .then(res => res.json())
         .then(data => {
             _hdData = data;
@@ -143,6 +145,9 @@ function loadHDView(view, mahd = '') {
             hdContent.innerHTML = html;
             hdTableWrap.style.display = 'none';
             hdContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add') {
+                if (typeof initAddHoaDonForm === 'function') initAddHoaDonForm();
+            }
             if (view !== 'add' && mahd) {
                 document.querySelectorAll('[name="mahd"]').forEach(e => e.value = mahd);
                 if (view === 'detail') {
@@ -154,7 +159,7 @@ function loadHDView(view, mahd = '') {
 function backToMain() {
     hdContent.innerHTML = '';
     hdTableWrap.style.display = '';
-    renderRows(_hdData || []);
+    fetchHoaDon();
 }
 hdContent.addEventListener('click', function(e) {
     if (e.target.classList.contains('hd-back')) backToMain();
@@ -168,4 +173,4 @@ hdTbody.addEventListener('click', function(e) {
         loadHDView('delete', e.target.dataset.mahd);
     }
 });
-</script> 
+</script>  
