@@ -97,10 +97,10 @@ function loadTTView(view, matt = '') {
                         })
                         .then(res => res.json())
                         .then(data => {
-                            if (data.success || data.status === 'success') {
+                            if (data.success || data.status === 'success' || data.message) {
                                 ttDelMsg.textContent = data.message || 'Xoá trạng thái thành công!';
                                 ttDelMsg.className = 'tt-msg success';
-                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchTrangThai === 'function') fetchTrangThai(); }, 1000);
+                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
                             } else {
                                 ttDelMsg.textContent = data.message || 'Xoá thất bại!';
                                 ttDelMsg.className = 'tt-msg error';
@@ -123,19 +123,4 @@ function loadTTView(view, matt = '') {
         });
 }
 
-document.querySelectorAll('.tt-delete').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const id = this.getAttribute('data-matt');
-        if (confirm('Bạn có chắc muốn xoá trạng thái này?')) {
-            fetch('http://localhost:86/cnpm-be/api/trangthai/' + id, {
-                method: 'DELETE'
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || 'Đã xoá!');
-                fetchTrangThai();
-            })
-            .catch(() => alert('Lỗi kết nối máy chủ!'));
-        }
-    });
-}); 
+// Đã xử lý sự kiện xóa trong loadTTView, không cần đoạn này nữa 

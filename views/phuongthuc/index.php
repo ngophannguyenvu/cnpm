@@ -63,6 +63,49 @@
     margin-left: auto;
     margin-right: auto;
 }
+.phuongthuc-msg {
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 4px;
+}
+.phuongthuc-msg.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+.phuongthuc-msg.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+.phuongthuc-confirm {
+    background: #ff4081;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin: 10px 5px 0 0;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.phuongthuc-back {
+    background: #9e9e9e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin: 10px 0 0 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.phuongthuc-confirm:hover {
+    background: #e73370;
+}
+.phuongthuc-back:hover {
+    background: #757575;
+}
 @media (max-width: 600px) {
     .pt-container { padding: 10px; }
     .pt-title { font-size: 1.2rem; }
@@ -133,29 +176,12 @@ function fetchPhuongThuc() {
 }
 fetchPhuongThuc();
 
-document.getElementById('pt-btn-add').onclick = () => loadPTView('add');
+document.getElementById('pt-btn-add').onclick = () => loadPhuongThucView('add');
 
 function loadPTView(view, mapt = '') {
-    fetch(`views/phuongthuc/${view}.php`)
-        .then(res => res.text())
-        .then(html => {
-            ptContent.innerHTML = html;
-            ptTableWrap.style.display = 'none';
-            ptContent.scrollIntoView({behavior: 'smooth'});
-            if (view === 'add' && typeof initAddPhuongThucForm === 'function') {
-                initAddPhuongThucForm();
-            }
-            if (view === 'edit' && typeof window.initEditPhuongThucForm === 'function') {
-                window.initEditPhuongThucForm();
-            }
-            if (view !== 'add' && mapt) {
-                document.querySelectorAll('[name="mapt"]').forEach(e => e.value = mapt);
-                if (view === 'detail') {
-                    document.getElementById('pt-mapt').textContent = mapt;
-                }
-            }
-        });
+    loadPhuongThucView(view, mapt);
 }
+
 function backToMain() {
     ptContent.innerHTML = '';
     ptTableWrap.style.display = '';
@@ -166,11 +192,11 @@ ptContent.addEventListener('click', function(e) {
 });
 ptTbody.addEventListener('click', function(e) {
     if (e.target.classList.contains('pt-detail')) {
-        loadPTView('detail', e.target.dataset.mapt);
+        loadPhuongThucView('detail', e.target.dataset.mapt);
     } else if (e.target.classList.contains('pt-edit')) {
-        loadPTView('edit', e.target.dataset.mapt);
+        loadPhuongThucView('edit', e.target.dataset.mapt);
     } else if (e.target.classList.contains('pt-delete')) {
-        loadPTView('delete', e.target.dataset.mapt);
+        loadPhuongThucView('delete', e.target.dataset.mapt);
     }
 });
 </script> 

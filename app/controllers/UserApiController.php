@@ -172,7 +172,7 @@ class UserApiController
     }
 
     // Xóa người dùng
-    public function deleteUser($id)
+    public function destroy($id)
     {
         header('Content-Type: application/json');
         

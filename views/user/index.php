@@ -124,6 +124,18 @@ function loadUserView(view, manguoidung = '') {
         .then(html => {
             document.getElementById('user-content').innerHTML = html;
             document.getElementById('user-table-wrap').style.display = 'none';
+            
+            // Thực thi lại các script trong view
+            const scripts = document.getElementById('user-content').querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                newScript.textContent = oldScript.textContent;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+            
             if (view === 'add' && typeof initAddUserForm === 'function') {
                 initAddUserForm();
             }

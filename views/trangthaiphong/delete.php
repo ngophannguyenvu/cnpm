@@ -52,32 +52,4 @@
     <button class="ttp-btn ttp-confirm">Xoá</button>
     <button class="ttp-btn ttp-back">Quay lại</button>
 </div>
-<script>
-document.querySelector('.ttp-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const ttpDelMsg = document.getElementById('ttp-del-msg');
-const mattpInput = document.querySelector('input[name="mattp"]');
-document.querySelector('.ttp-confirm').onclick = function() {
-    ttpDelMsg.textContent = 'Đang xử lý...';
-    ttpDelMsg.className = 'ttp-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthaiphong/' + mattpInput.value, {
-        method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success') {
-            ttpDelMsg.textContent = 'Xoá trạng thái phòng thành công!';
-            ttpDelMsg.className = 'ttp-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            ttpDelMsg.textContent = data.message || 'Xoá thất bại!';
-            ttpDelMsg.className = 'ttp-msg error';
-        }
-    })
-    .catch(() => {
-        ttpDelMsg.textContent = 'Lỗi kết nối máy chủ!';
-        ttpDelMsg.className = 'ttp-msg error';
-    });
-};
-</script> 
+<!-- Script xử lý đã được chuyển sang index.php --> 

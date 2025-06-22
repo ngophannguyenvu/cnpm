@@ -61,7 +61,7 @@ const maphongInput = document.querySelector('input[name="maphong"]');
 document.querySelector('.phong-confirm').onclick = function() {
     phongDelMsg.textContent = 'Đang xử lý...';
     phongDelMsg.className = 'phong-msg';
-    fetch('http://localhost:86/cnpm-be/api/phong' + maphongInput.value, {
+    fetch('http://localhost:86/cnpm-be/api/phong/' + maphongInput.value, {
         method: 'DELETE'
     })
     .then(res => res.json())
