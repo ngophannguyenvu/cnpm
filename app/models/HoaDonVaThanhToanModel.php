@@ -26,26 +26,31 @@ public function getHoaDonVaThanhToanById($id)
     return $result; 
 }
 
-public function addHoaDonVaThanhToan($NgayThanhToan, $Tongtien,$MaDL, $Manguoidung, $Maphong, $MaPT, $Matrangthai)
+public function addHoaDonVaThanhToan($NgayThanhToan, $Tongtien, $MaDL, $Manguoidung, $Maphong, $MaPT, $Matrangthai)
 {
-    $query = "INSERT INTO " . $this->table_name . " (NgayThanhToan, Tongtien, MaDL,Manguoidung, Maphong, MaPT, Matrangthai)
-              VALUES (:NgayThanhToan, :Tongtien, :MaDL,:Manguoidung,:Maphong, :MaPT, :Matrangthai)";
+    $query = "INSERT INTO " . $this->table_name . " (NgayThanhToan, Tongtien, MaDL, Manguoidung, Maphong, MaPT, Matrangthai)
+              VALUES (:NgayThanhToan, :Tongtien, :MaDL, :Manguoidung, :Maphong, :MaPT, :Matrangthai)";
     $stmt = $this->conn->prepare($query);
 
     $NgayThanhToan = htmlspecialchars(strip_tags($NgayThanhToan));
     $Tongtien = htmlspecialchars(strip_tags($Tongtien));
     $MaDL = htmlspecialchars(strip_tags($MaDL));
     $Manguoidung = htmlspecialchars(strip_tags($Manguoidung));
-    $Maphong = htmlspecialchars(strip_tags($Maphong));
     $MaPT = htmlspecialchars(strip_tags($MaPT));
     $Matrangthai = htmlspecialchars(strip_tags($Matrangthai));
 
+    // Nếu không có mã phòng, lấy phòng đầu tiên trong bảng phong
+    if (empty($Maphong) || $Maphong === null) {
+        $stmtPhong = $this->conn->query('SELECT Maphong FROM phong LIMIT 1');
+        $phong = $stmtPhong->fetch(PDO::FETCH_ASSOC);
+        $Maphong = $phong ? $phong['Maphong'] : 1;
+    }
 
     $stmt->bindParam(':NgayThanhToan', $NgayThanhToan);
     $stmt->bindParam(':Tongtien', $Tongtien);
     $stmt->bindParam(':MaDL', $MaDL);
     $stmt->bindParam(':Manguoidung', $Manguoidung);
-    $stmt->bindParam(':Maphong', $Maphong);
+    $stmt->bindParam(':Maphong', $Maphong, PDO::PARAM_INT);
     $stmt->bindParam(':MaPT', $MaPT);
     $stmt->bindParam(':Matrangthai', $Matrangthai);
     if ($stmt->execute()) {

@@ -19,14 +19,12 @@ public function getDatLichById($id)
 { 
     $query = "SELECT dl.MaDL, dl.Manguoidung, dl.Thoigiandatlich, dl.Trangthai_ 
     FROM " . $this->table_name . " dl 
-    WHERE dl.MaDL = 1";
-
-$stmt = $this->conn->prepare($query); 
-//$stmt->bindParam(':id', $id); 
-$stmt->execute(); 
-$result = $stmt->fetch(PDO::FETCH_OBJ);
-return $result;
-
+    WHERE dl.MaDL = :id";
+    $stmt = $this->conn->prepare($query); 
+    $stmt->bindParam(':id', $id); 
+    $stmt->execute(); 
+    $result = $stmt->fetch(PDO::FETCH_OBJ);
+    return $result;
 }
 // Thêm mới danh mục
 public function addDatLich($Manguoidung, $Thoigiandatlich,$Trangthai)

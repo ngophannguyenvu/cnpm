@@ -75,7 +75,7 @@ function fetchDatLichList() {
                 document.querySelectorAll('.dl-btn-invoice').forEach(btn => {
                     btn.onclick = function() {
                         const madl = this.getAttribute('data-madl');
-                        window.location.href = `../hoadon/add.php?madl=${madl}`;
+                        window.location.href = "/cnpm/views/hoadon/add.php?madl=" + madl;
                     };
                 });
             } else {
