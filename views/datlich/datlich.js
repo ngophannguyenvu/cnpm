@@ -3,7 +3,7 @@ function fetchDatLichList() {
     const tbody = document.getElementById('dl-tbody');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="5">Đang tải dữ liệu...</td></tr>';
-    fetch('http://localhost:86/cnpm-be/api/datlich')
+    fetch('http://localhost:81/cnpm/api/datlich')
         .then(res => res.json())
         .then(data => {
             if (Array.isArray(data) && data.length > 0) {
@@ -55,7 +55,7 @@ function initAddDatLichForm() {
             msg.classList.add('error');
             return;
         }
-        fetch('http://localhost:86/cnpm-be/api/datlich', {
+        fetch('http://localhost:81/cnpm/api/datlich', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -157,7 +157,7 @@ function initEditDatLichForm() {
             msg.classList.add('error');
             return;
         }
-        fetch('http://localhost:86/cnpm-be/api/datlich/' + form.madl.value, {
+        fetch('http://localhost:81/cnpm/api/datlich/' + form.madl.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -26,7 +26,7 @@ const madvInput = document.querySelector('input[name="madv"]');
 document.querySelector('.dv-confirm').onclick = function() {
     dvDelMsg.textContent = 'Đang xử lý...';
     dvDelMsg.className = 'dv-msg';
-    fetch('http://localhost:86/cnpm-be/api/dichvu/' + madvInput.value, {
+    fetch('http://localhost:81/cnpm/api/dichvu/' + madvInput.value, {
         method: 'DELETE'
     })
     .then(res => res.json())

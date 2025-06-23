@@ -119,7 +119,7 @@ function fetchTrangThai() {
     } else {
         renderRows(_ttData);
     }
-    fetch("http://localhost:86/cnpm-be/api/trangthai")
+    fetch("http://localhost:81/cnpm/api/trangthai")
         .then(res => res.json())
         .then(data => {
             _ttData = data;

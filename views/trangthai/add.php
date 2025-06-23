@@ -87,7 +87,7 @@ ttAddForm.onsubmit = function(e) {
     e.preventDefault();
     ttAddMsg.textContent = 'Đang xử lý...';
     ttAddMsg.className = 'tt-msg';
-    fetch('http://localhost:86/cnpm-be/api/trangthai', {
+    fetch('http://localhost:81/cnpm/api/trangthai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

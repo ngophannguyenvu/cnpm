@@ -6,7 +6,7 @@ function initAddTrangThaiPhongForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'ttp-msg';
-        fetch('http://localhost:86/cnpm-be/api/trangthaiphong', {
+        fetch('http://localhost:81/cnpm/api/trangthaiphong', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -34,7 +34,7 @@ dvAddForm.onsubmit = function(e) {
     e.preventDefault();
     dvAddMsg.textContent = 'Đang xử lý...';
     dvAddMsg.className = 'dv-msg';
-    fetch('http://localhost:86/cnpm-be/api/dichvu', {
+    fetch('http://localhost:81/cnpm/api/dichvu', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

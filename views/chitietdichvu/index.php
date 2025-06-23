@@ -122,7 +122,7 @@ function fetchCTDV() {
     } else {
         renderRows(_ctdvData);
     }
-    fetch("http://localhost:86/cnpm-BE/api/chitietdichvu")
+    fetch("http://localhost:81/cnpm/api/chitietdichvu")
         .then(res => res.json())
         .then(data => {
             _ctdvData = data;

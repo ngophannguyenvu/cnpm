@@ -61,7 +61,7 @@ const mattInput = document.querySelector('input[name="matt"]');
 document.querySelector('.tt-confirm').onclick = function() {
     ttDelMsg.textContent = 'Đang xử lý...';
     ttDelMsg.className = 'tt-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthai/' + mattInput.value, {
+    fetch('http://localhost:81/cnpm/api/trangthai/' + mattInput.value, {
         method: 'DELETE'
     })
     .then(res => res.json())

@@ -98,4 +98,68 @@ public function deleteDatLich($MaDL)
     return false;
 }
 
+public function createBooking($userId, $thoigian, $trangthai, $dichvu_ids)
+{
+    $this->conn->beginTransaction();
+
+    try {
+        // Bước 1: Tạo một bản ghi trong bảng `datlich`
+        $query_datlich = "INSERT INTO " . $this->table_name . " (Manguoidung, Thoigiandatlich, Trangthai_) VALUES (:userId, :thoigian, :trangthai)";
+        $stmt_datlich = $this->conn->prepare($query_datlich);
+        $stmt_datlich->bindParam(':userId', $userId);
+        $stmt_datlich->bindParam(':thoigian', $thoigian);
+        $stmt_datlich->bindParam(':trangthai', $trangthai);
+        $stmt_datlich->execute();
+
+        // Lấy ID của lịch đặt vừa được tạo
+        $maDL = $this->conn->lastInsertId();
+
+        // Bước 2: Thêm các dịch vụ vào bảng `chitietdichvu`
+        $query_chitiet = "INSERT INTO chitietdichvu (MaDL, MaDV) VALUES (:maDL, :maDV)";
+        $stmt_chitiet = $this->conn->prepare($query_chitiet);
+
+        foreach ($dichvu_ids as $maDV) {
+            $stmt_chitiet->bindParam(':maDL', $maDL);
+            $stmt_chitiet->bindParam(':maDV', $maDV);
+            $stmt_chitiet->execute();
+        }
+
+        // Nếu mọi thứ thành công, commit transaction
+        $this->conn->commit();
+        return true;
+
+    } catch (PDOException $e) {
+        // Nếu có lỗi, rollback transaction
+        $this->conn->rollBack();
+        return ['error' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage()];
+    }
+}
+
+public function getBookingHistoryByUser($userId)
+{
+    try {
+        // Lấy tất cả các lịch đã đặt của người dùng
+        $query_bookings = "SELECT MaDL, Thoigiandatlich, Trangthai_ FROM " . $this->table_name . " WHERE Manguoidung = :userId ORDER BY Thoigiandatlich DESC";
+        $stmt_bookings = $this->conn->prepare($query_bookings);
+        $stmt_bookings->bindParam(':userId', $userId);
+        $stmt_bookings->execute();
+        $bookings = $stmt_bookings->fetchAll(PDO::FETCH_ASSOC);
+
+        // Với mỗi lịch đặt, lấy chi tiết dịch vụ
+        $query_services = "SELECT dv.Tendichvu, dv.Gia FROM dichvu dv JOIN chitietdichvu ctdv ON dv.MaDV = ctdv.MaDV WHERE ctdv.MaDL = :maDL";
+        $stmt_services = $this->conn->prepare($query_services);
+
+        for ($i = 0; $i < count($bookings); $i++) {
+            $stmt_services->bindParam(':maDL', $bookings[$i]['MaDL']);
+            $stmt_services->execute();
+            $bookings[$i]['services'] = $stmt_services->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $bookings;
+
+    } catch (PDOException $e) {
+        return ['error' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage()];
+    }
+}
+
 }

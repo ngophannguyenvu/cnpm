@@ -12,7 +12,7 @@ function initAddHoaDonForm() {
         e.preventDefault();
         hdAddMsg.textContent = 'Đang xử lý...';
         hdAddMsg.className = 'hd-msg';
-        fetch('http://localhost:86/cnpm-be/api/hoaDonVaThanhToan', {
+        fetch('http://localhost:81/cnpm/api/hoaDonVaThanhToan', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -111,7 +111,7 @@ function initEditHoaDonForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'hd-msg';
-        fetch('http://localhost:86/cnpm-be/api/hoadonvathanhtoan/' + form.mahd.value, {
+        fetch('http://localhost:81/cnpm/api/hoadonvathanhtoan/' + form.mahd.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

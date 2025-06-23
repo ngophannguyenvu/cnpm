@@ -59,7 +59,7 @@ function renderDVRows(data) {
 }
 function fetchDichVu() {
     dvTbody.innerHTML = '<tr><td colspan="5">Đang tải dữ liệu...</td></tr>';
-    fetch("http://localhost:86/cnpm-be/api/dichvu")
+    fetch("http://localhost:81/cnpm/api/dichvu")
         .then(res => res.json())
         .then(data => {
             _dvData = data;

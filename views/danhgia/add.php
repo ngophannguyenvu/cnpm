@@ -104,7 +104,7 @@ document.getElementById('dg-add-form').onsubmit = function(e) {
         msg.classList.add('error');
         return;
     }
-    fetch('http://localhost:86/cnpm-be/api/danhgia', {
+    fetch('http://localhost:81/cnpm/api/danhgia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Danhgiasao: danhgiasao, Nhanxet: nhanxet, Ngaydanhgia: ngaydanhgia, Manguoidung: manguoidung, MaHD: mahd })

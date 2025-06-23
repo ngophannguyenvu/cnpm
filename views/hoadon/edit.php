@@ -123,7 +123,7 @@ hdEditForm.onsubmit = function(e) {
     e.preventDefault();
     hdEditMsg.textContent = 'Đang xử lý...';
     hdEditMsg.className = 'hd-msg';
-    fetch('http://localhost:86/cnpm-be/api/hoaDonVaThanhToan/' + hdEditForm.mahd.value, {
+    fetch('http://localhost:81/cnpm/api/hoaDonVaThanhToan/' + hdEditForm.mahd.value, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -150,7 +150,7 @@ hdEditForm.onsubmit = function(e) {
 };
 
 // Tự động lấy danh sách trạng thái từ API và render option
-fetch('http://localhost:86/cnpm-be/api/trangthai')
+fetch('http://localhost:81/cnpm/api/trangthai')
   .then(res => res.json())
   .then(data => {
     const select = document.getElementById('trangthai');

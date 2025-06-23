@@ -7,7 +7,7 @@ function fetchUserList() {
     loading.style.display = '';
     table.style.display = 'none';
     msg.textContent = '';
-    fetch('http://localhost:86/cnpm-be/api/user')
+    fetch('http://localhost:81/cnpm/api/user')
         .then(res => res.json())
         .then(data => {
             const arr = Array.isArray(data) ? data : (data.data || []);
@@ -45,7 +45,7 @@ function initAddUserForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'user-msg';
-        fetch('http://localhost:86/cnpm-be/api/user', {
+        fetch('http://localhost:81/cnpm/api/user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -110,7 +110,7 @@ function initEditUserForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'user-msg';
-        fetch('http://localhost:86/cnpm-BE/api/user/updateUser', {
+        fetch('http://localhost:81/cnpm/api/updateUser', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

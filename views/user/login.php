@@ -3,121 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Đăng nhập - Spa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #fef7f7 0%, #fff0f3 100%); min-height: 100vh; }
-        .card-custom { max-width: 400px; margin: 60px auto; border-radius: 20px; box-shadow: 0 10px 30px rgba(255, 112, 150, 0.1); }
-        .card-header { background: linear-gradient(135deg, #ff7096 0%, #ff4d7e 100%); color: white; border-radius: 20px 20px 0 0; }
-        .btn-main { background: linear-gradient(135deg, #ff7096 0%, #ff4d7e 100%); color: white; border: none; border-radius: 12px; font-weight: 600; transition: all 0.3s; }
-        .btn-main:hover { background: #ff4d7e; color: white; }
-        label { font-weight: 500; color: #ff4d7e; }
-        .user-login-form {
-            max-width: 400px;
-            margin: 60px auto;
-            background: #fff0f6;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(255, 105, 135, 0.15);
-            padding: 32px 24px 24px 24px;
-            font-family: 'Segoe UI', Arial, sans-serif;
+        body {
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
         }
-        .user-login-title {
-            color: #ff4081;
+        .login-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            max-width: 420px;
+            width: 100%;
             text-align: center;
-            margin-bottom: 18px;
-            font-size: 1.5rem;
-            font-weight: bold;
         }
-        .user-login-form label {
-            color: #ff4081;
+        .login-container h2 {
+            color: #E84393;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .form-control:focus {
+            border-color: #E84393;
+            box-shadow: 0 0 0 0.25rem rgba(232, 67, 147, 0.25);
+        }
+        .btn-primary {
+            background-color: #E84393;
+            border-color: #E84393;
+            padding: 10px 20px;
             font-weight: 500;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .user-login-form input {
             width: 100%;
-            padding: 8px 10px;
-            margin-bottom: 16px;
-            border: 1px solid #ffb6d5;
-            border-radius: 6px;
-            font-size: 1rem;
-            background: #fff;
+            border-radius: 12px;
+            transition: all 0.3s ease;
         }
-        .user-login-btn {
-            width: 100%;
-            background: linear-gradient(90deg, #ff80ab, #ff4081);
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 0;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: background 0.2s;
+        .btn-primary:hover {
+            background-color: #d83682;
+            border-color: #d83682;
+            transform: translateY(-2px);
         }
-        .user-login-btn:hover {
-            background: #e73370;
+        .form-label {
+            color: #555;
+            font-weight: 500;
         }
-        .user-login-msg {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1rem;
+        #user-login-msg {
+            margin-top: 15px;
+            font-weight: 500;
         }
-        .user-login-msg.success { color: #43a047; }
-        .user-login-msg.error { color: #e53935; }
-        @media (max-width: 600px) {
-            .user-login-form { padding: 10px; }
-            .user-login-title { font-size: 1.1rem; }
-        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .extra-links { margin-top: 20px; }
+        .extra-links a { color: #E84393; text-decoration: none; }
     </style>
 </head>
 <body>
-<div class="card card-custom">
-    <div class="card-header text-center">
-        <span class="fs-5 fw-bold">Đăng nhập</span>
-    </div>
-    <div class="card-body">
-        <form class="user-login-form" id="user-login-form">
-            <div class="user-login-title">Đăng nhập hệ thống</div>
-            <div class="user-login-msg" id="user-login-msg"></div>
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit" class="user-login-btn">Đăng nhập</button>
+    <div class="login-container">
+        <h2>Đăng nhập</h2>
+        <form id="user-login-form">
+            <div class="mb-3 text-start">
+                <label for="email" class="form-label">Địa chỉ Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3 text-start">
+                <label for="matkhau" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="matkhau" name="matkhau" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng nhập</button>
+            <div id="user-login-msg"></div>
         </form>
+        <div class="extra-links">
+            <p>Chưa có tài khoản? <a href="register.php">Đăng ký ngay</a></p>
+        </div>
     </div>
-</div>
+
 <script>
 const userLoginForm = document.getElementById('user-login-form');
 const userLoginMsg = document.getElementById('user-login-msg');
 userLoginForm.onsubmit = function(e) {
     e.preventDefault();
     userLoginMsg.textContent = 'Đang xử lý...';
-    userLoginMsg.className = 'user-login-msg';
-    fetch('http://localhost:86/cnpm-BE/api/user/login', {
+    userLoginMsg.className = '';
+    fetch('/cnpm/api/user/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             email: userLoginForm.email.value,
-            password: userLoginForm.password.value
+            matkhau: userLoginForm.matkhau.value
         })
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success || data.status === 'success' || data.message) {
-            userLoginMsg.textContent = data.message || 'Đăng nhập thành công!';
-            userLoginMsg.className = 'user-login-msg success';
-            setTimeout(() => { if (typeof onLoginSuccess === 'function') onLoginSuccess(data); }, 1000);
+        userLoginMsg.textContent = data.message || data.error;
+        if (data.success) {
+            userLoginMsg.className = 'success';
+            setTimeout(() => {
+                if (data.role === 'admin') {
+                    location.href = '/cnpm/';
+                } else {
+                    location.href = '/cnpm/customer';
+                }
+            }, 1500);
         } else {
-            userLoginMsg.textContent = data.message || 'Đăng nhập thất bại!';
-            userLoginMsg.className = 'user-login-msg error';
+            userLoginMsg.className = 'error';
         }
     })
     .catch(() => {
         userLoginMsg.textContent = 'Lỗi kết nối máy chủ!';
-        userLoginMsg.className = 'user-login-msg error';
+        userLoginMsg.className = 'error';
     });
 };
 </script>

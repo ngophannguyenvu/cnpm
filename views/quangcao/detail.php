@@ -87,7 +87,7 @@ if (typeof _quangCaoData !== 'undefined') {
     loadingDiv.textContent = 'Đang tải dữ liệu...';
     loadingDiv.style.textAlign = 'center';
     detailBox.appendChild(loadingDiv);
-    fetch('http://localhost:86/cnpm-BE/api/quangcao/' + maqc)
+    fetch('http://localhost:81/cnpm/api/quangcao/' + maqc)
         .then(res => res.json())
         .then(qc => {
             loadingDiv.remove();

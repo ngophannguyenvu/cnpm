@@ -16,7 +16,7 @@ function initAddDanhGiaForm() {
             dgAddMsg.classList.add('error');
             return;
         }
-        fetch('http://localhost:86/cnpm-be/api/danhgia', {
+        fetch('http://localhost:81/cnpm/api/danhgia', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ Danhgiasao: danhgiasao, Nhanxet: nhanxet, Ngaydanhgia: ngaydanhgia, Manguoidung: manguoidung, MaHD: mahd })
@@ -83,7 +83,7 @@ function initEditDanhGiaForm() {
             msg.classList.add('error');
             return;
         }
-        fetch('http://localhost:86/cnpm-be/api/danhgia/' + form.madg.value, {
+        fetch('http://localhost:81/cnpm/api/danhgia/' + form.madg.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

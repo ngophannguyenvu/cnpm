@@ -56,7 +56,7 @@ document.getElementById('dg-del-confirm').onclick = function() {
     const msg = document.getElementById('dg-del-msg');
     msg.textContent = '';
     msg.className = 'dg-del-msg';
-    fetch('http://localhost:86/cnpm-BE/api/danhgia/' + encodeURIComponent(madg), {
+    fetch('http://localhost:81/cnpm/api/danhgia/' + encodeURIComponent(madg), {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
     })

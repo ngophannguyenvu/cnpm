@@ -113,7 +113,7 @@ document.getElementById('dl-add-form').onsubmit = function(e) {
     }
 
     // Gửi API POST
-    fetch('http://localhost:86/cnpm-be/api/datlich', {
+    fetch('http://localhost:81/cnpm/api/datlich', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -121,7 +121,7 @@ function fetchPhuongThuc() {
     } else {
         renderRows(_ptData);
     }
-    fetch("http://localhost:86/cnpm-be/api/phuongthuc")
+    fetch("http://localhost:81/cnpm/api/phuongthuc")
         .then(res => res.json())
         .then(data => {
             _ptData = data;

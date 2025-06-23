@@ -2,7 +2,7 @@
 function fetchTrangThai() {
     const ttTbody = document.getElementById('tt-tbody');
     if (ttTbody) ttTbody.innerHTML = '<tr><td colspan="3">Đang tải dữ liệu...</td></tr>';
-    fetch('http://localhost:86/cnpm-be/api/trangthai')
+    fetch('http://localhost:81/cnpm/api/trangthai')
         .then(res => res.json())
         .then(data => {
             const arr = Array.isArray(data) ? data : (data.data || []);
@@ -33,7 +33,7 @@ function initAddTrangThaiForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'tt-msg';
-        fetch('http://localhost:86/cnpm-be/api/trangthai', {
+        fetch('http://localhost:81/cnpm/api/trangthai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

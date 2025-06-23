@@ -3,124 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký tài khoản</title>
+    <title>Đăng ký - Spa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #fef7f7 0%, #fff0f3 100%); min-height: 100vh; }
-        .card-custom { max-width: 500px; margin: 40px auto; border-radius: 20px; box-shadow: 0 10px 30px rgba(255, 112, 150, 0.1); }
-        .card-header { background: linear-gradient(135deg, #ff7096 0%, #ff4d7e 100%); color: white; border-radius: 20px 20px 0 0; }
-        .btn-main { background: linear-gradient(135deg, #ff7096 0%, #ff4d7e 100%); color: white; border: none; border-radius: 12px; font-weight: 600; transition: all 0.3s; }
-        .btn-main:hover { background: #ff4d7e; color: white; }
-        label { font-weight: 500; color: #ff4d7e; }
-        .user-register-form {
-            max-width: 400px;
-            margin: 60px auto;
-            background: #fff0f6;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(255, 105, 135, 0.15);
-            padding: 32px 24px 24px 24px;
-            font-family: 'Segoe UI', Arial, sans-serif;
+        body {
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
         }
-        .user-register-title {
-            color: #ff4081;
+        .register-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            max-width: 420px;
+            width: 100%;
             text-align: center;
-            margin-bottom: 18px;
-            font-size: 1.5rem;
-            font-weight: bold;
         }
-        .user-register-form label {
-            color: #ff4081;
+        .register-container h2 {
+            color: #E84393;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .form-control:focus {
+            border-color: #E84393;
+            box-shadow: 0 0 0 0.25rem rgba(232, 67, 147, 0.25);
+        }
+        .btn-primary {
+            background-color: #E84393;
+            border-color: #E84393;
+            padding: 10px 20px;
             font-weight: 500;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .user-register-form input {
             width: 100%;
-            padding: 8px 10px;
-            margin-bottom: 16px;
-            border: 1px solid #ffb6d5;
-            border-radius: 6px;
-            font-size: 1rem;
-            background: #fff;
+            border-radius: 12px;
+            transition: all 0.3s ease;
         }
-        .user-register-btn {
-            width: 100%;
-            background: linear-gradient(90deg, #ff80ab, #ff4081);
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 0;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 8px;
-            transition: background 0.2s;
+        .btn-primary:hover {
+            background-color: #d83682;
+            border-color: #d83682;
+            transform: translateY(-2px);
         }
-        .user-register-btn:hover {
-            background: #e73370;
+        .form-label {
+            color: #555;
+            font-weight: 500;
         }
-        .user-register-msg {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1rem;
+        #user-register-msg {
+            margin-top: 15px;
+            font-weight: 500;
         }
-        .user-register-msg.success { color: #43a047; }
-        .user-register-msg.error { color: #e53935; }
-        @media (max-width: 600px) {
-            .user-register-form { padding: 10px; }
-            .user-register-title { font-size: 1.1rem; }
-        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .extra-links { margin-top: 20px; }
+        .extra-links a { color: #E84393; text-decoration: none; }
     </style>
 </head>
 <body>
-<div class="card card-custom">
-    <div class="card-header text-center">
-        <span class="fs-5 fw-bold">Đăng ký tài khoản</span>
-    </div>
-    <div class="card-body">
-        <form class="user-register-form" id="user-register-form">
-            <div class="user-register-title">Đăng ký tài khoản</div>
-            <div class="user-register-msg" id="user-register-msg"></div>
-            <label for="hoten">Họ tên</label>
-            <input type="text" id="hoten" name="hoten" required>
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit" class="user-register-btn">Đăng ký</button>
+    <div class="register-container">
+        <h2>Tạo tài khoản</h2>
+        <form id="user-register-form">
+            <div class="mb-3 text-start">
+                <label for="hoten" class="form-label">Họ và Tên</label>
+                <input type="text" class="form-control" id="hoten" name="hoten" required>
+            </div>
+            <div class="mb-3 text-start">
+                <label for="sdt" class="form-label">Số điện thoại</label>
+                <input type="text" class="form-control" id="sdt" name="sdt" required pattern="[0-9]{10,11}">
+            </div>
+            <div class="mb-3 text-start">
+                <label for="diachi" class="form-label">Địa chỉ</label>
+                <input type="text" class="form-control" id="diachi" name="diachi">
+            </div>
+            <div class="mb-3 text-start">
+                <label for="email" class="form-label">Địa chỉ Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3 text-start">
+                <label for="ngaysinh" class="form-label">Ngày sinh</label>
+                <input type="date" class="form-control" id="ngaysinh" name="ngaysinh">
+            </div>
+            <div class="mb-3 text-start">
+                <label for="gioitinh" class="form-label">Giới tính</label>
+                <select class="form-control" id="gioitinh" name="gioitinh">
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+            </div>
+            <div class="mb-3 text-start">
+                <label for="matkhau" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="matkhau" name="matkhau" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
+            <div id="user-register-msg"></div>
         </form>
+        <div class="extra-links">
+            <p>Đã có tài khoản? <a href="login.php">Đăng nhập</a></p>
+        </div>
     </div>
-</div>
+
 <script>
 const userRegisterForm = document.getElementById('user-register-form');
 const userRegisterMsg = document.getElementById('user-register-msg');
 userRegisterForm.onsubmit = function(e) {
     e.preventDefault();
     userRegisterMsg.textContent = 'Đang xử lý...';
-    userRegisterMsg.className = 'user-register-msg';
-    fetch('http://localhost:86/cnpm-BE/api/user/register', {
+    userRegisterMsg.className = '';
+    fetch('/cnpm/api/user/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             hoten: userRegisterForm.hoten.value,
+            sdt: userRegisterForm.sdt.value,
+            diachi: userRegisterForm.diachi.value,
             email: userRegisterForm.email.value,
-            password: userRegisterForm.password.value
+            ngaysinh: userRegisterForm.ngaysinh.value,
+            gioitinh: userRegisterForm.gioitinh.value,
+            matkhau: userRegisterForm.matkhau.value
         })
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success || data.status === 'success' || data.message) {
-            userRegisterMsg.textContent = data.message || 'Đăng ký thành công!';
-            userRegisterMsg.className = 'user-register-msg success';
-            setTimeout(() => { if (typeof onRegisterSuccess === 'function') onRegisterSuccess(data); }, 1000);
+        userRegisterMsg.textContent = data.message || data.error;
+        if (data.success) {
+            userRegisterMsg.className = 'success';
+            setTimeout(() => location.href = '/cnpm/views/user/login.php', 1500);
         } else {
-            userRegisterMsg.textContent = data.message || 'Đăng ký thất bại!';
-            userRegisterMsg.className = 'user-register-msg error';
+            userRegisterMsg.className = 'error';
         }
     })
     .catch(() => {
         userRegisterMsg.textContent = 'Lỗi kết nối máy chủ!';
-        userRegisterMsg.className = 'user-register-msg error';
+        userRegisterMsg.className = 'error';
     });
 };
 </script>

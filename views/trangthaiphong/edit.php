@@ -92,7 +92,7 @@ ttpEditForm.onsubmit = function(e) {
     e.preventDefault();
     ttpEditMsg.textContent = 'Đang xử lý...';
     ttpEditMsg.className = 'ttp-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthaiphong/' + ttpEditForm.mattp.value, {
+    fetch('http://localhost:81/cnpm/api/trangthaiphong/' + ttpEditForm.mattp.value, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

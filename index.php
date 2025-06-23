@@ -42,13 +42,20 @@ if ($url[0] === 'api' && isset($url[1])) {
                 $action = $id ? 'show' : 'index';
                 break;
             case 'POST':
-                // Nếu có action đặc biệt ở URL thứ 2 (ví dụ: /api/account/login)
+                // Nếu có action đặc biệt ở URL thứ 2 (ví dụ: /api/user/login)
                 $specialAction = $url[2] ?? null;
                 if ($specialAction && method_exists($controller, $specialAction)) {
                     $action = $specialAction;
                     $id = null;
                 } else {
-                    $action = 'store';
+                    // Mặc định cho POST là 'store' hoặc 'register' nếu tồn tại
+                    if (method_exists($controller, 'register')) {
+                        $action = 'register';
+                    } elseif (method_exists($controller, 'store')) {
+                        $action = 'store';
+                    } else {
+                        $action = null; // Hoặc xử lý lỗi
+                    }
                 }
                 break;
             case 'PUT':
@@ -93,10 +100,21 @@ if (file_exists('app/controllers/' . $controllerName . '.php')) {
 }
 
 if (method_exists($controller, $action)) {
+    // START: Include header before calling action
+    if (!isset($_GET['api']) && $controllerName !== 'CustomerController') { // Don't load admin partials for customer page
+        include_once 'views/partials/header.php';
+    }
+    // END: Include header
     call_user_func_array([$controller, $action], array_slice($url, 2));
 } else {
     die('Action not found');
 }
+
+// Prevent loading admin layout for customer pages
+if ($controllerName === 'CustomerController') {
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -280,7 +298,7 @@ if (method_exists($controller, $action)) {
                         <li data-view="trangthaiphong" style="padding:10px 0; cursor:pointer;"><i class="fas fa-door-closed"></i> Trạng thái phòng</li>
                     </ul>
                 </li>
-                <li><i class="fas fa-sign-out-alt"></i>Đăng xuất</li>
+                <li data-action="logout"><i class="fas fa-sign-out-alt"></i>Đăng xuất</li>
             </ul>
         </div>
         <div class="main-content" id="main-content">
@@ -412,13 +430,31 @@ if (method_exists($controller, $action)) {
             const targetLi = e.target.closest('li');
             if (targetLi) {
                 document.querySelectorAll('#menu li').forEach(li => li.classList.remove('active'));
-                targetLi.classList.add('active');
+                
                 const view = targetLi.getAttribute('data-view');
-                if(view) {
+                const action = targetLi.getAttribute('data-action');
+
+                if (view) {
+                    targetLi.classList.add('active');
                     loadView(view);
-                } else if (targetLi.innerText.includes('Đăng xuất')) {
-                    // Handle logout here
-                    console.log("Logout clicked");
+                } else if (action === 'logout') {
+                    fetch('/cnpm/api/user/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Đăng xuất thành công!');
+                            location.href = '/cnpm/';
+                        } else {
+                            alert(data.error || 'Đăng xuất thất bại.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Logout failed:', err);
+                        alert('Lỗi khi đăng xuất.');
+                    });
                 }
             }
         });

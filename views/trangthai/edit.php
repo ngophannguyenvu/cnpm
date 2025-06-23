@@ -92,7 +92,7 @@ ttEditForm.onsubmit = function(e) {
     e.preventDefault();
     ttEditMsg.textContent = 'Đang xử lý...';
     ttEditMsg.className = 'tt-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthai/' + ttEditForm.matt.value, {
+    fetch('http://localhost:81/cnpm/api/trangthai/' + ttEditForm.matt.value, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

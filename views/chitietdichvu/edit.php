@@ -92,7 +92,7 @@ document.getElementById('ctdv-edit-form').onsubmit = function(e) {
         msg.classList.add('error');
         return;
     }
-    fetch('http://localhost:86/cnpm-be/api/chitietdichvu' + encodeURIComponent(madl), {
+    fetch('http://localhost:81/cnpm/api/chitietdichvu' + encodeURIComponent(madl), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ MaDV: madv })

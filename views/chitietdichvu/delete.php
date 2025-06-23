@@ -59,7 +59,7 @@ document.getElementById('ctdv-del-confirm').onclick = function() {
     const msg = document.getElementById('ctdv-del-msg');
     msg.textContent = '';
     msg.className = 'ctdv-del-msg';
-    fetch('http://localhost:86/cnpm-be/api/chitietdichvu' + encodeURIComponent(madl), {
+    fetch('http://localhost:81/cnpm/api/chitietdichvu' + encodeURIComponent(madl), {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ MaDV: madv })

@@ -89,7 +89,7 @@ phongAddForm.onsubmit = function(e) {
     e.preventDefault();
     phongAddMsg.textContent = 'Đang xử lý...';
     phongAddMsg.className = 'phong-msg';
-    fetch('http://localhost:86/cnpm-be/api/phong', {
+    fetch('http://localhost:81/cnpm/api/phong', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

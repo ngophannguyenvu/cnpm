@@ -8,7 +8,7 @@ function fetchQuangCaoList() {
     loading && (loading.style.display = '');
     table && (table.style.display = 'none');
     msg && (msg.textContent = '');
-    fetch('http://localhost:86/cnpm-be/api/quangcao')
+    fetch('http://localhost:81/cnpm/api/quangcao')
         .then(res => res.json())
         .then(data => {
             const arr = Array.isArray(data) ? data : (data.data || []);
@@ -70,7 +70,7 @@ function initAddQuangCaoForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'qc-msg';
-        fetch('http://localhost:86/cnpm-be/api/quangcao', {
+        fetch('http://localhost:81/cnpm/api/quangcao', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -136,7 +136,7 @@ function initEditQuangCaoForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'qc-msg';
-        fetch('http://localhost:86/cnpm-be/api/quangcao/' + form.maqc.value, {
+        fetch('http://localhost:81/cnpm/api/quangcao/' + form.maqc.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

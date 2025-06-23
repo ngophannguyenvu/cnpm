@@ -14,7 +14,7 @@ function initAddPhongForm() {
             phongAddMsg.classList.add('error');
             return;
         }
-        fetch('http://localhost:86/cnpm-be/api/phong', {
+        fetch('http://localhost:81/cnpm/api/phong', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ Tenphong: tenphong, Loaiphong: loaiphong, MatrangthaiP: matrangthaiP })
@@ -66,7 +66,7 @@ function initEditPhongForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'phong-msg';
-        fetch('http://localhost:86/cnpm-be/api/phong/' + form.maphong.value, {
+        fetch('http://localhost:81/cnpm/api/phong/' + form.maphong.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

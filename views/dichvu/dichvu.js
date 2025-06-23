@@ -6,7 +6,7 @@ function initAddDichVuForm() {
         e.preventDefault();
         dvAddMsg.textContent = 'Đang xử lý...';
         dvAddMsg.className = 'dv-msg';
-        fetch('http://localhost:86/cnpm-be/api/dichvu', {
+        fetch('http://localhost:81/cnpm/api/dichvu', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -58,7 +58,7 @@ function initEditDichVuForm() {
         e.preventDefault();
         dvEditMsg.textContent = 'Đang xử lý...';
         dvEditMsg.className = 'dv-msg';
-        fetch('http://localhost:86/cnpm-be/api/dichvu/' + dvEditForm.madv.value, {
+        fetch('http://localhost:81/cnpm/api/dichvu/' + dvEditForm.madv.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

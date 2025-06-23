@@ -14,7 +14,7 @@ function initAddPhuongThucForm() {
             ptAddMsg.classList.add('error');
             return;
         }
-        fetch('http://localhost:86/cnpm-be/api/phuongthuc', {
+        fetch('http://localhost:81/cnpm/api/phuongthuc', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ MaPT: mapt, TenPT: tenpt, Mota: mota })
@@ -72,7 +72,7 @@ function initEditPhuongThucForm() {
         e.preventDefault();
         msg.textContent = 'Đang xử lý...';
         msg.className = 'pt-form-msg';
-        fetch('http://localhost:86/cnpm-be/api/phuongthuc/' + form.mapt.value, {
+        fetch('http://localhost:81/cnpm/api/phuongthuc/' + form.mapt.value, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
