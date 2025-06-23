@@ -206,56 +206,102 @@ if ($controllerName === 'CustomerController') {
         .main-content {
             margin-left: 250px;
             flex-grow: 1;
-            padding: 30px;
+            padding: 40px 30px 30px 30px;
             overflow-y: auto;
+            background: linear-gradient(120deg, #fdfbfb 0%, #fce1ee 100%);
+            min-height: 100vh;
+            transition: background 0.5s;
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 36px;
+            background: linear-gradient(90deg, #e84393 0%, #fcb1d1 100%);
+            color: #fff;
+            border-radius: 18px;
+            box-shadow: 0 6px 24px rgba(232,67,147,0.10);
+            padding: 32px 36px 28px 36px;
+            animation: fadeInDown 0.8s;
         }
         .header h1 {
-            font-size: 1.5em;
+            font-size: 2.1em;
             margin: 0;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(232,67,147,0.10);
         }
         .kpi-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            gap: 28px;
+            margin-bottom: 36px;
         }
         .card {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: linear-gradient(120deg, #fff0f6 0%, #fce1ee 100%);
+            padding: 32px 24px 28px 24px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(232,67,147,0.10);
+            transition: transform 0.18s, box-shadow 0.18s;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.7s;
+        }
+        .card:hover {
+            transform: translateY(-7px) scale(1.03);
+            box-shadow: 0 16px 40px rgba(232,67,147,0.18);
         }
         .card .card-title {
-            font-size: 0.9em;
-            color: #888;
-            margin-bottom: 10px;
+            font-size: 1.05em;
+            color: #e84393;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
         .card .card-value {
-            font-size: 2em;
-            font-weight: 600;
+            font-size: 2.2em;
+            font-weight: 700;
             margin-bottom: 10px;
+            color: #222;
         }
         .card .card-icon {
-            font-size: 2.5em;
-            color: var(--primary-color);
-            opacity: 0.7;
+            font-size: 2.7em;
+            color: #e84393;
+            opacity: 0.85;
+            filter: drop-shadow(0 2px 8px #f8bbd0);
         }
-         .card-content {
+        .card-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .chart-container {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: #fff;
+            padding: 32px 24px 24px 24px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(232,67,147,0.10);
+            margin-top: 10px;
+            animation: fadeIn 1s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media (max-width: 900px) {
+            .main-content { padding: 20px 5px 20px 5px; }
+            .header { flex-direction: column; align-items: flex-start; padding: 24px 16px; }
+            .header h1 { font-size: 1.3em; }
+            .kpi-cards { gap: 14px; }
+            .card { padding: 18px 10px; }
+            .chart-container { padding: 12px 6px; }
         }
         .menu .has-submenu { position: relative; }
         .menu .has-submenu > ul.submenu {
@@ -314,7 +360,7 @@ if ($controllerName === 'CustomerController') {
         function loadDashboard() {
             mainContent.innerHTML = `
                 <div class="header">
-                    <h1>Chào mừng đến với Spa Admin!</h1>
+                    <h1><i class='fas fa-gem' style='margin-right:12px;'></i>Chào mừng đến với Spa Admin!</h1>
                 </div>
                 <div class="kpi-cards">
                     <div class="card">
