@@ -2,17 +2,20 @@
 require_once('app/config/database.php');
 
 require_once('app/models/HoaDonVaThanhToanModel.php');
+require_once('app/models/DatLichModel.php');
 
 
 class HoaDonVaThanhToanApiController
 {
     private $hoaDonVaThanhToanModel;
+    private $datLichModel;
     private $db;
 
     public function __construct()
     {
         $this->db = (new Database())->getConnection();
         $this->hoaDonVaThanhToanModel = new HoaDonVaThanhToanModel($this->db);
+        $this->datLichModel = new DatLichModel($this->db);
     }
 
     // Lấy danh sách
@@ -72,6 +75,10 @@ class HoaDonVaThanhToanApiController
                 http_response_code(400);
                 echo json_encode(['errors' => $result]);
             } elseif ($result === true) {
+                // Cập nhật trạng thái lịch đặt sau khi lập hóa đơn thành công
+                $trangThaiMoi = $this->getTrangThaiTheoMaTrangThai($Matrangthai);
+                $this->datLichModel->updateTrangThaiDatLich($MaDL, $trangThaiMoi);
+                
                 http_response_code(201);
                 echo json_encode(['message' => 'Hóa đơn được thêm thành công']);
             } else {
@@ -104,6 +111,10 @@ class HoaDonVaThanhToanApiController
         }
         $result = $this->hoaDonVaThanhToanModel->updateHoaDonVaThanhToan($id, $NgayThanhToan, $Tongtien,$MaDL, $Manguoidung, $Maphong, $MaPT, $Matrangthai);
         if ($result === true) {
+            // Cập nhật trạng thái lịch đặt sau khi cập nhật hóa đơn thành công
+            $trangThaiMoi = $this->getTrangThaiTheoMaTrangThai($Matrangthai);
+            $this->datLichModel->updateTrangThaiDatLich($MaDL, $trangThaiMoi);
+            
             echo json_encode(['message' => 'Cập nhật hóa đơn thành công']);
         } else {
             http_response_code(400);
@@ -126,6 +137,29 @@ class HoaDonVaThanhToanApiController
         } else {
             http_response_code(400);
             echo json_encode(['message' => 'Xóa hóa đơn thất bại']);
+        }
+    }
+
+    // Hàm helper để lấy tên trạng thái theo mã trạng thái
+    private function getTrangThaiTheoMaTrangThai($maTrangThai)
+    {
+        $query = "SELECT Tentrangthai FROM trangthai WHERE Matrangthai = :maTrangThai";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':maTrangThai', $maTrangThai);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            return $result['Tentrangthai'];
+        }
+        
+        // Fallback cho các mã trạng thái phổ biến
+        switch($maTrangThai) {
+            case '1': return 'Đã thanh toán';
+            case '0': return 'Chưa thanh toán';
+            case '3': return 'Chờ thanh toán';
+            case '4': return 'Đang chờ';
+            default: return 'Đã thanh toán';
         }
     }
 

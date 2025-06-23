@@ -117,6 +117,30 @@ if (typeof _hdData !== 'undefined' && hdEditForm.mahd.value) {
         hdEditForm.ngay.value = hd.NgayThanhToan || '';
         hdEditForm.tongtien.value = hd.Tongtien || '';
         hdEditForm.trangthai.value = hd.Matrangthai || '';
+        // Hiển thị thông tin cũ
+        const oldInfo = document.getElementById('hd-old-info');
+        if (oldInfo) {
+            // Hàm helper để chuyển đổi mã trạng thái thành tên trạng thái
+            function getTrangThaiName(maTrangThai) {
+                switch(maTrangThai) {
+                    case '1': return 'Đã thanh toán';
+                    case '0': return 'Chưa thanh toán';
+                    case '3': return 'Chờ thanh toán';
+                    case '4': return 'Đang chờ';
+                    default: return maTrangThai || 'Không xác định';
+                }
+            }
+            
+            oldInfo.style.display = '';
+            document.getElementById('hd-old-mahd').textContent = hd.MaHD || '';
+            document.getElementById('hd-old-ngay').textContent = hd.NgayThanhToan || '';
+            document.getElementById('hd-old-tongtien').textContent = hd.Tongtien || '';
+            document.getElementById('hd-old-trangthai').textContent = getTrangThaiName(hd.Matrangthai);
+            document.getElementById('hd-old-madl').textContent = hd.MaDL || '';
+            document.getElementById('hd-old-manguoidung').textContent = hd.Manguoidung || '';
+            document.getElementById('hd-old-maphong').textContent = hd.Maphong || '';
+            document.getElementById('hd-old-mapt').textContent = hd.MaPT || '';
+        }
     }
 }
 hdEditForm.onsubmit = function(e) {

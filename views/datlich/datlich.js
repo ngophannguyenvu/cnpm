@@ -30,12 +30,20 @@ function fetchDatLichList() {
                             </button>
                         `;
                     }
-                    // Thêm nút lập hóa đơn nếu trạng thái là "Xác nhận"
-                    else if (trangthai.toLowerCase() === 'xác nhận') {
+                    // Thêm nút lập hóa đơn nếu trạng thái là "Xác nhận", "Chờ thanh toán", hoặc "Chưa thanh toán" (chưa lập hóa đơn)
+                    else if (trangthai.toLowerCase() === 'xác nhận' || 
+                             trangthai.toLowerCase() === 'chờ thanh toán' || 
+                             trangthai.toLowerCase() === 'chưa thanh toán') {
                         actionBtns += `
                             <button class="btn btn-primary btn-sm dl-btn-invoice" data-madl="${item.MaDL}">
                                 <i class="fas fa-file-invoice"></i> Lập hóa đơn
                             </button>
+                        `;
+                    }
+                    // Hiển thị thông báo đã lập hóa đơn nếu trạng thái là "Đã thanh toán"
+                    else if (trangthai.toLowerCase() === 'đã thanh toán') {
+                        actionBtns += `
+                            <span class="badge bg-success">Đã lập hóa đơn</span>
                         `;
                     }
 
@@ -48,6 +56,9 @@ function fetchDatLichList() {
                             case 'xác nhận': return 'bg-success';
                             case 'đã hoàn thành': return 'bg-info';
                             case 'đã hủy': return 'bg-danger';
+                            case 'đã thanh toán': return 'bg-primary';
+                            case 'chờ thanh toán': return 'bg-info';
+                            case 'chưa thanh toán': return 'bg-secondary';
                             default: return 'bg-secondary';
                         }
                     };

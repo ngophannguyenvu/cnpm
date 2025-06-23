@@ -20,6 +20,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hdModel = new HoaDonVaThanhToanModel($db);
     $result = $hdModel->addHoaDonVaThanhToan($NgayThanhToan, $Tongtien, $MaDL, $Manguoidung, $Maphong, $MaPT, $Matrangthai);
     if ($result === true) {
+        // Cập nhật trạng thái lịch đặt sau khi lưu hóa đơn thành công
+        $stmtTrangThai = $db->prepare('SELECT Tentrangthai FROM trangthai WHERE Matrangthai = :matrangthai');
+        $stmtTrangThai->bindParam(':matrangthai', $Matrangthai);
+        $stmtTrangThai->execute();
+        $trangThaiResult = $stmtTrangThai->fetch(PDO::FETCH_ASSOC);
+        
+        if ($trangThaiResult) {
+            $trangThaiMoi = $trangThaiResult['Tentrangthai'];
+        } else {
+            // Fallback cho các mã trạng thái phổ biến
+            switch($Matrangthai) {
+                case '1': $trangThaiMoi = 'Đã thanh toán'; break;
+                case '0': $trangThaiMoi = 'Chưa thanh toán'; break;
+                case '3': $trangThaiMoi = 'Chờ thanh toán'; break;
+                case '4': $trangThaiMoi = 'Đang chờ'; break;
+                default: $trangThaiMoi = 'Đã thanh toán'; break;
+            }
+        }
+        
+        $datlichModel->updateTrangThaiDatLich($MaDL, $trangThaiMoi);
+        
         header('Location: /cnpm/views/hoadon/index.php?success=1');
         exit;
     } else {

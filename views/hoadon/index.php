@@ -102,12 +102,24 @@ function renderRows(data) {
         hdTbody.innerHTML = '<tr><td colspan="5">Không có dữ liệu</td></tr>';
         return;
     }
+    
+    // Hàm helper để chuyển đổi mã trạng thái thành tên trạng thái
+    function getTrangThaiName(maTrangThai) {
+        switch(maTrangThai) {
+            case '1': return 'Đã thanh toán';
+            case '0': return 'Chưa thanh toán';
+            case '3': return 'Chờ thanh toán';
+            case '4': return 'Đang chờ';
+            default: return maTrangThai || 'Không xác định';
+        }
+    }
+    
     hdTbody.innerHTML = data.map(item => `
         <tr>
             <td>${item.MaHD}</td>
             <td>${item.NgayThanhToan || ''}</td>
             <td>${item.Tongtien ? item.Tongtien.toLocaleString('vi-VN') + 'đ' : ''}</td>
-            <td>${item.Matrangthai || ''}</td>
+            <td>${getTrangThaiName(item.Matrangthai)}</td>
             <td>
                 <button class="hd-btn hd-detail" data-mahd="${item.MaHD}">Chi tiết</button>
                 <button class="hd-btn hd-edit" data-mahd="${item.MaHD}">Sửa</button>

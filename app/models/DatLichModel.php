@@ -85,6 +85,24 @@ public function updateDatLich($id, $Manguoidung, $Thoigiandatlich,$Trangthai)
     return false;
 }
 
+// Hàm mới chỉ cập nhật trạng thái lịch đặt (không thay đổi thời gian)
+public function updateTrangThaiDatLich($id, $trangThai)
+{
+    $query = "UPDATE " . $this->table_name . " SET Trangthai_ = :Trangthai WHERE MaDL = :id";
+    $stmt = $this->conn->prepare($query);
+
+    $trangThai = htmlspecialchars(strip_tags($trangThai));
+    
+    $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':Trangthai', $trangThai);
+    
+    if ($stmt->execute()) {
+        return true;
+    }
+
+    return false;
+}
+
 public function deleteDatLich($MaDL)
 {
     $query = "DELETE FROM " . $this->table_name . " WHERE MaDL = :MaDL";

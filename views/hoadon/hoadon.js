@@ -56,6 +56,17 @@ function backToMain() {
     fetchHoaDon(); // Luôn gọi lại API để lấy dữ liệu mới nhất
 }
 
+// Hàm helper để chuyển đổi mã trạng thái thành tên trạng thái
+function getTrangThaiName(maTrangThai) {
+    switch(maTrangThai) {
+        case '1': return 'Đã thanh toán';
+        case '0': return 'Chưa thanh toán';
+        case '3': return 'Chờ thanh toán';
+        case '4': return 'Đang chờ';
+        default: return maTrangThai || 'Không xác định';
+    }
+}
+
 function renderRows(data) {
     console.log('renderRows data:', data);
     if (!Array.isArray(data) || data.length === 0) {
@@ -67,7 +78,7 @@ function renderRows(data) {
             <td>${item.MaHD}</td>
             <td>${item.NgayThanhToan || ''}</td>
             <td>${item.Tongtien ? Number(item.Tongtien).toLocaleString('vi-VN') + 'đ' : ''}</td>
-            <td>${item.Matrangthai || ''}</td>
+            <td>${getTrangThaiName(item.Matrangthai)}</td>
             <td>
                 <button class="hd-btn hd-detail" data-mahd="${item.MaHD}">Chi tiết</button>
                 <button class="hd-btn hd-edit" data-mahd="${item.MaHD}">Sửa</button>
@@ -99,7 +110,7 @@ function initEditHoaDonForm() {
                 document.getElementById('hd-old-mahd').textContent = hd.MaHD || '';
                 document.getElementById('hd-old-ngay').textContent = hd.NgayThanhToan || '';
                 document.getElementById('hd-old-tongtien').textContent = hd.Tongtien || '';
-                document.getElementById('hd-old-trangthai').textContent = hd.Matrangthai == '1' ? 'Đã thanh toán' : (hd.Matrangthai == '0' ? 'Chưa thanh toán' : '');
+                document.getElementById('hd-old-trangthai').textContent = getTrangThaiName(hd.Matrangthai);
                 document.getElementById('hd-old-madl').textContent = hd.MaDL || '';
                 document.getElementById('hd-old-manguoidung').textContent = hd.Manguoidung || '';
                 document.getElementById('hd-old-maphong').textContent = hd.Maphong || '';

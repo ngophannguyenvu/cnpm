@@ -83,10 +83,21 @@ if (typeof _hdData !== 'undefined') {
     const mahd = document.querySelector('[name="mahd"]') ? document.querySelector('[name="mahd"]').value : (typeof hd_mahd !== 'undefined' ? hd_mahd : '');
     const hd = (_hdData || []).find(x => x.MaHD == mahd);
     if (hd) {
+        // Hàm helper để chuyển đổi mã trạng thái thành tên trạng thái
+        function getTrangThaiName(maTrangThai) {
+            switch(maTrangThai) {
+                case '1': return 'Đã thanh toán';
+                case '0': return 'Chưa thanh toán';
+                case '3': return 'Chờ thanh toán';
+                case '4': return 'Đang chờ';
+                default: return maTrangThai || 'Không xác định';
+            }
+        }
+        
         document.getElementById('hd-mahd').textContent = hd.MaHD || '';
         document.getElementById('hd-ngay').textContent = hd.NgayThanhToan || '';
         document.getElementById('hd-tongtien').textContent = hd.Tongtien ? hd.Tongtien.toLocaleString('vi-VN') + 'đ' : '';
-        document.getElementById('hd-trangthai').textContent = hd.Matrangthai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán';
+        document.getElementById('hd-trangthai').textContent = getTrangThaiName(hd.Matrangthai);
     }
 }
 </script> 
