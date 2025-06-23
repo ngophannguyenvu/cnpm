@@ -36,9 +36,6 @@ public function addDanhGia($Danhgiasao,$Nhanxet,$Ngaydanhgia,$Manguoidung,$MaHD)
     if (empty($Nhanxet)) {
         $errors['Nhanxet'] = 'Nhanxet không được để trống';
     }
-    if (empty($Ngaydanhgia)) {
-        $errors['Ngaydanhgia'] = 'Ngaydanhgia không được để trống';
-    }
     if (empty($Manguoidung)) {
         $errors['Manguoidung'] = 'Manguoidung không được để trống';
     }
@@ -107,5 +104,45 @@ public function deleteDanhGia($MaDG)
         return true;
     }
     return false;
+}
+
+// Kiểm tra xem người dùng đã đánh giá cho hóa đơn này chưa
+public function checkUserHasRated($maHD, $manguoidung)
+{
+    $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE MaHD = :MaHD AND Manguoidung = :Manguoidung";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':MaHD', $maHD);
+    $stmt->bindParam(':Manguoidung', $manguoidung);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['count'] > 0;
+}
+
+// Lấy đánh giá theo mã hóa đơn
+public function getDanhGiaByMaHD($maHD)
+{
+    $query = "SELECT dg.MaDG, dg.Danhgiasao, dg.Nhanxet, dg.Ngaydanhgia, dg.Manguoidung, dg.MaHD 
+              FROM " . $this->table_name . " dg 
+              WHERE dg.MaHD = :MaHD";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':MaHD', $maHD);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_OBJ);
+    return $result;
+}
+
+// Lấy tất cả đánh giá của một người dùng
+public function getDanhGiasByUser($manguoidung)
+{
+    $query = "SELECT dg.MaDG, dg.Danhgiasao, dg.Nhanxet, dg.Ngaydanhgia, dg.Manguoidung, dg.MaHD 
+              FROM " . $this->table_name . " dg 
+              WHERE dg.Manguoidung = :Manguoidung 
+              ORDER BY dg.Ngaydanhgia DESC";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':Manguoidung', $manguoidung);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+    if (!$result) return [];
+    return $result;
 }
 } 

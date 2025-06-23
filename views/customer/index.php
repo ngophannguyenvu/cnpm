@@ -134,7 +134,7 @@ if (!$user) {
                 </div>
             </div>
             
-            <div class="col-md-6 col-lg-3 mb-4">
+            <!-- <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card h-100 text-center feature-card">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-file-invoice-dollar fa-3x text-primary mb-3"></i>
@@ -143,7 +143,7 @@ if (!$user) {
                         <a href="/cnpm/customer/hoaDon" class="btn btn-outline-primary mt-auto">Xem lịch sử</a>
                     </div>
                 </div>
-            </div>
+            </div> -->
             
             <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card h-100 text-center feature-card">
@@ -152,6 +152,17 @@ if (!$user) {
                         <h5 class="card-title">Lịch Sử Đặt Lịch</h5>
                         <p class="card-text">Xem lại các lịch hẹn đã đặt trước đó.</p>
                         <a href="/cnpm/customer/lichsu" class="btn btn-outline-primary mt-auto">Xem lịch sử</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 text-center feature-card">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-star fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Đánh Giá Của Tôi</h5>
+                        <p class="card-text">Xem lại các đánh giá bạn đã gửi cho dịch vụ.</p>
+                        <a href="/cnpm/customer/danhgia" class="btn btn-outline-primary mt-auto">Xem đánh giá</a>
                     </div>
                 </div>
             </div>

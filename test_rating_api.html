@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Rating API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .response-area {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Test Rating API</h1>
+        
+        <div class="test-section">
+            <h3>1. Lấy đánh giá của người dùng</h3>
+            <button class="btn btn-primary" onclick="getUserRatings()">Lấy đánh giá</button>
+            <div id="user-ratings-response" class="response-area"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Kiểm tra đánh giá cho hóa đơn</h3>
+            <input type="text" id="check-maHD" class="form-control mb-2" placeholder="Nhập mã hóa đơn" value="1">
+            <button class="btn btn-info" onclick="checkRating()">Kiểm tra</button>
+            <div id="check-rating-response" class="response-area"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Thêm đánh giá mới</h3>
+            <div class="mb-3">
+                <label class="form-label">Mã hóa đơn:</label>
+                <input type="text" id="rating-maHD" class="form-control" value="1">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Đánh giá sao (1-5):</label>
+                <input type="number" id="rating-stars" class="form-control" min="1" max="5" value="5">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nhận xét:</label>
+                <textarea id="rating-comment" class="form-control" rows="3" placeholder="Nhập nhận xét của bạn">Dịch vụ rất tốt, nhân viên phục vụ nhiệt tình!</textarea>
+            </div>
+            <button class="btn btn-success" onclick="addRating()">Thêm đánh giá</button>
+            <div id="add-rating-response" class="response-area"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Lấy tất cả đánh giá</h3>
+            <button class="btn btn-secondary" onclick="getAllRatings()">Lấy tất cả</button>
+            <div id="all-ratings-response" class="response-area"></div>
+        </div>
+    </div>
+
+    <script>
+        function showResponse(elementId, data) {
+            document.getElementById(elementId).textContent = JSON.stringify(data, null, 2);
+        }
+        
+        function getUserRatings() {
+            fetch('/cnpm/api/danhgia/user_ratings', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('user-ratings-response', data);
+            })
+            .catch(error => {
+                showResponse('user-ratings-response', { error: error.message });
+            });
+        }
+        
+        function checkRating() {
+            const maHD = document.getElementById('check-maHD').value;
+            fetch(`/cnpm/api/danhgia/check_rating?maHD=${maHD}`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('check-rating-response', data);
+            })
+            .catch(error => {
+                showResponse('check-rating-response', { error: error.message });
+            });
+        }
+        
+        function addRating() {
+            const ratingData = {
+                MaHD: document.getElementById('rating-maHD').value,
+                Danhgiasao: document.getElementById('rating-stars').value,
+                Nhanxet: document.getElementById('rating-comment').value
+            };
+            
+            fetch('/cnpm/api/danhgia/customer_rate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(ratingData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('add-rating-response', data);
+            })
+            .catch(error => {
+                showResponse('add-rating-response', { error: error.message });
+            });
+        }
+        
+        function getAllRatings() {
+            fetch('/cnpm/api/danhgia/list', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResponse('all-ratings-response', data);
+            })
+            .catch(error => {
+                showResponse('all-ratings-response', { error: error.message });
+            });
+        }
+    </script>
+</body>
+</html> 

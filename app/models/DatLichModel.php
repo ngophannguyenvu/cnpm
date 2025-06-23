@@ -178,4 +178,51 @@ public function getBookingHistoryByUser($userId)
     }
 }
 
+// Lấy lịch sử đặt lịch với thông tin hóa đơn và trạng thái đánh giá
+public function getBookingHistoryWithInvoiceAndRating($userId)
+{
+    try {
+        // Lấy tất cả các lịch đã đặt của người dùng với thông tin hóa đơn
+        $query_bookings = "SELECT dl.MaDL, dl.Thoigiandatlich, dl.Trangthai_, hd.MaHD, hd.Tongtien, hd.NgayThanhToan
+                          FROM " . $this->table_name . " dl 
+                          LEFT JOIN hoadon_va_thanhtoan hd ON dl.MaDL = hd.MaDL 
+                          WHERE dl.Manguoidung = :userId 
+                          ORDER BY dl.Thoigiandatlich DESC";
+        $stmt_bookings = $this->conn->prepare($query_bookings);
+        $stmt_bookings->bindParam(':userId', $userId);
+        $stmt_bookings->execute();
+        $bookings = $stmt_bookings->fetchAll(PDO::FETCH_ASSOC);
+
+        // Với mỗi lịch đặt, lấy chi tiết dịch vụ và kiểm tra đánh giá
+        $query_services = "SELECT dv.Tendichvu, dv.Gia FROM dichvu dv JOIN chitietdichvu ctdv ON dv.MaDV = ctdv.MaDV WHERE ctdv.MaDL = :maDL";
+        $stmt_services = $this->conn->prepare($query_services);
+
+        $query_rating = "SELECT COUNT(*) as has_rated FROM danhgia WHERE MaHD = :MaHD AND Manguoidung = :Manguoidung";
+        $stmt_rating = $this->conn->prepare($query_rating);
+
+        for ($i = 0; $i < count($bookings); $i++) {
+            // Lấy dịch vụ
+            $stmt_services->bindParam(':maDL', $bookings[$i]['MaDL']);
+            $stmt_services->execute();
+            $bookings[$i]['services'] = $stmt_services->fetchAll(PDO::FETCH_ASSOC);
+
+            // Kiểm tra đánh giá nếu có hóa đơn
+            if ($bookings[$i]['MaHD']) {
+                $stmt_rating->bindParam(':MaHD', $bookings[$i]['MaHD']);
+                $stmt_rating->bindParam(':Manguoidung', $userId);
+                $stmt_rating->execute();
+                $rating_result = $stmt_rating->fetch(PDO::FETCH_ASSOC);
+                $bookings[$i]['has_rated'] = $rating_result['has_rated'] > 0;
+            } else {
+                $bookings[$i]['has_rated'] = false;
+            }
+        }
+
+        return $bookings;
+
+    } catch (PDOException $e) {
+        return ['error' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage()];
+    }
+}
+
 }

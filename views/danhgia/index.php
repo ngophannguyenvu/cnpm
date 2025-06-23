@@ -125,11 +125,11 @@ function fetchDanhGia() {
     } else {
         renderRows(_dgData);
     }
-    fetch("http://localhost:81/cnpm/api/danhgia")
+    fetch("/cnpm/api/danhgia/index.php?action=list")
         .then(res => res.json())
         .then(data => {
-            _dgData = data;
-            renderRows(data);
+            _dgData = data.data || [];
+            renderRows(_dgData);
         })
         .catch(() => {
             dgTbody.innerHTML = '<tr><td colspan="6">Lỗi tải dữ liệu</td></tr>';

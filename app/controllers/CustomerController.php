@@ -26,4 +26,9 @@ class CustomerController {
         require_once 'views/customer/hoaDon.php';
         exit();
     }
+    
+    public function danhgia() {
+        require_once 'views/customer/danhgia.php';
+        exit();
+    }
 } 

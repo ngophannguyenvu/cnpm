@@ -183,7 +183,7 @@ class DatLichApiController
         }
 
         $userId = $_SESSION['user_id'];
-        $history = $this->datLichModel->getBookingHistoryByUser($userId);
+        $history = $this->datLichModel->getBookingHistoryWithInvoiceAndRating($userId);
 
         if (is_array($history)) {
             echo json_encode(['success' => true, 'data' => $history]);

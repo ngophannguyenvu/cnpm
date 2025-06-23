@@ -130,6 +130,52 @@ if (!$user) { header('Location: /cnpm/views/user/login.php'); exit; }
         .spinner-border {
             color: var(--primary-color);
         }
+        .rating-btn {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .rating-btn:hover {
+            background: #d83682;
+            color: #fff;
+        }
+        .rating-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .rated-badge {
+            background: #28a745;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        .star-rating {
+            display: inline-block;
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+        .star-rating .star {
+            transition: color 0.2s;
+        }
+        .star-rating .star:hover,
+        .star-rating .star.active {
+            color: #ffc107;
+        }
+        .modal-header {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
     </style>
 </head>
 <body>
@@ -164,6 +210,48 @@ if (!$user) { header('Location: /cnpm/views/user/login.php'); exit; }
         </div>
     </div>
 
+    <!-- Modal Đánh Giá -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ratingModalLabel">
+                        <i class="fas fa-star me-2"></i>Đánh Giá Dịch Vụ
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ratingForm">
+                        <input type="hidden" id="ratingMaHD" name="MaHD">
+                        <div class="mb-3">
+                            <label class="form-label">Đánh giá sao:</label>
+                            <div class="star-rating" id="starRating">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="selectedRating" name="Danhgiasao" value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ratingComment" class="form-label">Nhận xét:</label>
+                            <textarea class="form-control" id="ratingComment" name="Nhanxet" rows="4" 
+                                      placeholder="Hãy chia sẻ trải nghiệm của bạn về dịch vụ..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="submitRating">
+                        <i class="fas fa-paper-plane me-2"></i>Gửi Đánh Giá
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // Hàm format ngày tháng
 function formatDate(dateString) {
@@ -231,6 +319,18 @@ function loadHistory() {
                     `<li>${s.Tendichvu} (${formatCurrency(s.Gia)})</li>`
                 ).join('');
                 
+                // Kiểm tra xem có thể đánh giá không
+                const canRate = item.MaHD && item.Trangthai_?.toLowerCase() === 'đã thanh toán' && !item.has_rated;
+                const ratingButton = canRate ? 
+                    `<button class="rating-btn" onclick="openRatingModal('${item.MaHD}')">
+                        <i class="fas fa-star me-2"></i>Đánh Giá
+                    </button>` : '';
+                
+                const ratedBadge = item.has_rated ? 
+                    `<span class="rated-badge">
+                        <i class="fas fa-check me-1"></i>Đã đánh giá
+                    </span>` : '';
+                
                 return `
                     <div class="history-item">
                         <h5>
@@ -239,9 +339,13 @@ function loadHistory() {
                             <span class="status-badge ${getStatusClass(item.Trangthai_)}">
                                 ${item.Trangthai_ || 'Không xác định'}
                             </span>
+                            ${ratedBadge}
                         </h5>
                         <p><strong>Các dịch vụ đã đặt:</strong></p>
                         <ul>${services}</ul>
+                        ${item.MaHD ? `<p><strong>Mã hóa đơn:</strong> ${item.MaHD}</p>` : ''}
+                        ${item.Tongtien ? `<p><strong>Tổng tiền:</strong> ${formatCurrency(item.Tongtien)}</p>` : ''}
+                        ${ratingButton}
                     </div>
                 `;
             }).join('');
@@ -283,9 +387,88 @@ function loadHistory() {
     });
 }
 
-// Tải dữ liệu khi trang load
+// Mở modal đánh giá
+function openRatingModal(maHD) {
+    document.getElementById('ratingMaHD').value = maHD;
+    document.getElementById('selectedRating').value = '5';
+    document.getElementById('ratingComment').value = '';
+    
+    // Reset stars
+    document.querySelectorAll('.star').forEach((star, index) => {
+        star.classList.remove('active');
+        if (index < 5) star.classList.add('active');
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('ratingModal'));
+    modal.show();
+}
+
+// Xử lý đánh giá sao
 document.addEventListener('DOMContentLoaded', function() {
     loadHistory();
+    
+    // Xử lý click vào sao
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            document.getElementById('selectedRating').value = rating;
+            
+            // Cập nhật hiển thị sao
+            document.querySelectorAll('.star').forEach((s, index) => {
+                s.classList.remove('active');
+                if (index < rating) s.classList.add('active');
+            });
+        });
+    });
+    
+    // Xử lý submit đánh giá
+    document.getElementById('submitRating').addEventListener('click', function() {
+        const form = document.getElementById('ratingForm');
+        const formData = new FormData(form);
+        
+        const ratingData = {
+            MaHD: formData.get('MaHD'),
+            Danhgiasao: formData.get('Danhgiasao'),
+            Nhanxet: formData.get('Nhanxet')
+        };
+        
+        if (!ratingData.Nhanxet.trim()) {
+            alert('Vui lòng nhập nhận xét');
+            return;
+        }
+        
+        // Disable button
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+        
+        fetch('/cnpm/api/danhgia/index.php?action=customer_rate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(ratingData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                bootstrap.Modal.getInstance(document.getElementById('ratingModal')).hide();
+                loadHistory(); // Reload để cập nhật trạng thái
+            } else {
+                alert(data.message || 'Có lỗi xảy ra khi gửi đánh giá');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Có lỗi xảy ra khi gửi đánh giá');
+        })
+        .finally(() => {
+            // Re-enable button
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi Đánh Giá';
+        });
+    });
 });
 
 // Xử lý đăng xuất
