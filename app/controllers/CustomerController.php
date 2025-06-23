@@ -21,4 +21,9 @@ class CustomerController {
         require_once 'views/customer/hoso.php';
         exit();
     }
+    
+    public function hoaDon() {
+        require_once 'views/customer/hoaDon.php';
+        exit();
+    }
 } 

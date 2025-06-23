@@ -163,4 +163,40 @@ class HoaDonVaThanhToanApiController
         }
     }
 
+    // Lấy hóa đơn theo người dùng đang đăng nhập
+    public function userInvoices()
+    {
+        header('Content-Type: application/json');
+        
+        // Kiểm tra session
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Bạn cần đăng nhập để xem lịch sử hóa đơn']);
+            return;
+        }
+        
+        $userId = $_SESSION['user_id'];
+        
+        // Lấy hóa đơn của người dùng
+        $query = "SELECT h.MaHD, h.NgayThanhToan, h.Tongtien, h.MaDL, h.Manguoidung, h.Maphong, h.MaPT, h.Matrangthai,
+                         t.Tentrangthai as TenTrangThai,
+                         p.TenPT as TenPhuongThuc
+                  FROM " . $this->hoaDonVaThanhToanModel->table_name . " h
+                  LEFT JOIN trangthai t ON h.Matrangthai = t.Matrangthai
+                  LEFT JOIN phuongthuc p ON h.MaPT = p.MaPT
+                  WHERE h.Manguoidung = :userId
+                  ORDER BY h.NgayThanhToan DESC";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+        $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode(['success' => true, 'data' => $invoices]);
+    }
+
 }
