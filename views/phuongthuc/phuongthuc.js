@@ -104,4 +104,63 @@ function initEditPhuongThucForm() {
         };
     }
 }
-window.initEditPhuongThucForm = initEditPhuongThucForm; 
+window.initEditPhuongThucForm = initEditPhuongThucForm;
+
+function loadPhuongThucView(view, mapt = '') {
+    fetch(`views/phuongthuc/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            ptContent.innerHTML = html;
+            ptTableWrap.style.display = 'none';
+            ptContent.scrollIntoView({behavior: 'smooth'});
+            if (view === 'add' && typeof initAddPhuongThucForm === 'function') {
+                initAddPhuongThucForm();
+            }
+            if (view === 'edit' && typeof window.initEditPhuongThucForm === 'function') {
+                window.initEditPhuongThucForm();
+            }
+            if (view !== 'add' && mapt) {
+                document.querySelectorAll('[name="mapt"]').forEach(e => e.value = mapt);
+                if (view === 'detail') {
+                    document.getElementById('phuongthuc-mapt').textContent = mapt;
+                }
+                if (view === 'delete') {
+                    document.getElementById('phuongthuc-mapt').textContent = mapt;
+                    // Gắn lại sự kiện cho nút Xoá và Quay lại
+                    const ptBackBtn = document.querySelector('.phuongthuc-back');
+                    if (ptBackBtn) {
+                        ptBackBtn.onclick = function() {
+                            if (typeof backToMain === 'function') backToMain();
+                        };
+                    }
+                    const ptConfirmBtn = document.querySelector('.phuongthuc-confirm');
+                    const ptDelMsg = document.getElementById('phuongthuc-del-msg');
+                    const maptInput = document.querySelector('input[name="mapt"]');
+                    if (ptConfirmBtn && maptInput) {
+                        ptConfirmBtn.onclick = function() {
+                            ptDelMsg.textContent = 'Đang xử lý...';
+                            ptDelMsg.className = 'phuongthuc-msg';
+                            fetch('http://localhost:86/cnpm-be/api/phuongthuc/' + maptInput.value, {
+                                method: 'DELETE'
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success || data.status === 'success' || data.message) {
+                                    ptDelMsg.textContent = data.message || 'Xoá phương thức thành công!';
+                                    ptDelMsg.className = 'phuongthuc-msg success';
+                                    setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchPhuongThuc === 'function') fetchPhuongThuc(); }, 1000);
+                                } else {
+                                    ptDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                    ptDelMsg.className = 'phuongthuc-msg error';
+                                }
+                            })
+                            .catch(() => {
+                                ptDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                                ptDelMsg.className = 'phuongthuc-msg error';
+                            });
+                        };
+                    }
+                }
+            }
+        });
+} 

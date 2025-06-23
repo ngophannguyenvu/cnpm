@@ -112,26 +112,42 @@
         <tbody id="quangcao-list-tbody"></tbody>
     </table>
 </div>
+<div id="qc-content"></div>
 <script src="views/quangcao/quangcao.js"></script>
 <script>
 function loadQuangCaoView(view, maqc = '') {
     fetch(`views/quangcao/${view}.php`)
         .then(res => res.text())
         .then(html => {
-            document.body.innerHTML += '<div id="qc-content-modal">' + html + '</div>';
-            if (view === 'edit' && typeof window.initEditQuangCaoForm === 'function') {
-                window.initEditQuangCaoForm();
+            document.querySelector('.quangcao-list-box').style.display = 'none';
+            let qcContent = document.getElementById('qc-content');
+            if (!qcContent) {
+                qcContent = document.createElement('div');
+                qcContent.id = 'qc-content';
+                document.body.appendChild(qcContent);
             }
+            qcContent.innerHTML = html;
             if (view !== 'add' && maqc) {
                 document.querySelectorAll('[name="maqc"]').forEach(e => e.value = maqc);
             }
+            if (view === 'add' && typeof initAddQuangCaoForm === 'function') {
+                initAddQuangCaoForm();
+            }
+            if (view === 'edit' && typeof initEditQuangCaoForm === 'function') {
+                initEditQuangCaoForm();
+            }
         });
 }
-
+function backToMain() {
+    let qcContent = document.getElementById('qc-content');
+    if (qcContent) qcContent.innerHTML = '';
+    document.querySelector('.quangcao-list-box').style.display = '';
+    // Có thể reload lại danh sách nếu cần
+}
+window.backToMain = backToMain;
 document.querySelector('.quangcao-add').onclick = function() {
     loadQuangCaoView('add');
 };
-
 document.getElementById('quangcao-list-tbody').onclick = function(e) {
     if (e.target.classList.contains('quangcao-action-btn')) {
         const row = e.target.closest('tr');

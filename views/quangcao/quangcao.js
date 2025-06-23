@@ -57,7 +57,17 @@ function addQuangCaoEventListeners() {
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
-            if (typeof loadQuangCaoView === 'function') loadQuangCaoView('delete', id);
+            if (confirm('Bạn có chắc muốn xoá quảng cáo này?')) {
+                fetch('http://localhost:86/cnpm-be/api/quangcao/' + id, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || 'Đã xoá!');
+                    fetchQuangCaoList();
+                })
+                .catch(() => alert('Lỗi kết nối máy chủ!'));
+            }
         });
     });
 }
@@ -166,4 +176,65 @@ function initEditQuangCaoForm() {
         });
     };
 }
-window.initEditQuangCaoForm = initEditQuangCaoForm; 
+window.initEditQuangCaoForm = initEditQuangCaoForm;
+
+function loadQuangCaoView(view, maqc = '') {
+    fetch(`views/quangcao/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            document.querySelector('.quangcao-list-box').style.display = 'none';
+            let qcContent = document.getElementById('qc-content');
+            if (!qcContent) {
+                qcContent = document.createElement('div');
+                qcContent.id = 'qc-content';
+                document.body.appendChild(qcContent);
+            }
+            qcContent.innerHTML = html;
+            if (view !== 'add' && maqc) {
+                document.querySelectorAll('[name="maqc"]').forEach(e => e.value = maqc);
+            }
+            if (view === 'add' && typeof initAddQuangCaoForm === 'function') {
+                initAddQuangCaoForm();
+            }
+            if (view === 'edit' && typeof initEditQuangCaoForm === 'function') {
+                initEditQuangCaoForm();
+            }
+            if (view === 'delete' && maqc) {
+                document.querySelectorAll('[name="maqc"]').forEach(e => e.value = maqc);
+                // Gắn lại sự kiện cho nút Xoá và Quay lại
+                const qcBackBtn = document.querySelector('.qc-back');
+                if (qcBackBtn) {
+                    qcBackBtn.onclick = function() {
+                        if (typeof backToMain === 'function') backToMain();
+                    };
+                }
+                const qcConfirmBtn = document.querySelector('.qc-confirm');
+                const qcDelMsg = document.getElementById('qc-del-msg');
+                const maqcInput = document.querySelector('input[name="maqc"]');
+                if (qcConfirmBtn && maqcInput) {
+                    qcConfirmBtn.onclick = function() {
+                        qcDelMsg.textContent = 'Đang xử lý...';
+                        qcDelMsg.className = 'qc-msg';
+                        fetch('http://localhost:86/cnpm-be/api/quangcao/' + maqcInput.value, {
+                            method: 'DELETE'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message || data.success || data.status === 'success') {
+                                qcDelMsg.textContent = data.message || 'Xoá quảng cáo thành công!';
+                                qcDelMsg.className = 'qc-msg success';
+                                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchQuangCaoList === 'function') fetchQuangCaoList(); }, 1000);
+                            } else {
+                                qcDelMsg.textContent = data.message || 'Xoá thất bại!';
+                                qcDelMsg.className = 'qc-msg error';
+                            }
+                        })
+                        .catch(() => {
+                            qcDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                            qcDelMsg.className = 'qc-msg error';
+                        });
+                    };
+                }
+            }
+        });
+} 

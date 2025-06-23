@@ -52,32 +52,4 @@
     <button class="tt-btn tt-confirm">Xoá</button>
     <button class="tt-btn tt-back">Quay lại</button>
 </div>
-<script>
-document.querySelector('.tt-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const ttDelMsg = document.getElementById('tt-del-msg');
-const mattInput = document.querySelector('input[name="matt"]');
-document.querySelector('.tt-confirm').onclick = function() {
-    ttDelMsg.textContent = 'Đang xử lý...';
-    ttDelMsg.className = 'tt-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthai/' + mattInput.value, {
-        method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success') {
-            ttDelMsg.textContent = 'Xoá trạng thái thành công!';
-            ttDelMsg.className = 'tt-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            ttDelMsg.textContent = data.message || 'Xoá thất bại!';
-            ttDelMsg.className = 'tt-msg error';
-        }
-    })
-    .catch(() => {
-        ttDelMsg.textContent = 'Lỗi kết nối máy chủ!';
-        ttDelMsg.className = 'tt-msg error';
-    });
-};
-</script> 
+<!-- Script xử lý đã được chuyển sang index.php --> 

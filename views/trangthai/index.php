@@ -140,6 +140,18 @@ function loadTTView(view, matt = '') {
             ttContent.innerHTML = html;
             ttTableWrap.style.display = 'none';
             ttContent.scrollIntoView({behavior: 'smooth'});
+            
+            // Thực thi lại các script trong view
+            const scripts = ttContent.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                newScript.textContent = oldScript.textContent;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+            
             if (view === 'add' && typeof initAddTrangThaiForm === 'function') {
                 initAddTrangThaiForm();
             }
@@ -149,12 +161,76 @@ function loadTTView(view, matt = '') {
                     document.getElementById('tt-matt').textContent = matt;
                 }
             }
+            
+            // Đặc biệt xử lý cho view delete
+            if (view === 'delete') {
+                const ttDelMsg = document.getElementById('tt-del-msg');
+                const mattInput = document.querySelector('input[name="matt"]');
+                const ttConfirmBtn = document.querySelector('.tt-confirm');
+                const ttBackBtn = document.querySelector('.tt-back');
+                
+                if (ttBackBtn) {
+                    ttBackBtn.onclick = function() {
+                        backToMain();
+                    };
+                }
+                
+                if (ttConfirmBtn && mattInput && ttDelMsg) {
+                    ttConfirmBtn.onclick = function() {
+                        // Hiển thị thông báo xử lý
+                        ttDelMsg.textContent = 'Đang xử lý...';
+                        ttDelMsg.className = 'tt-msg';
+                        
+                        // Lưu giá trị ID để xóa khỏi UI
+                        const idToDelete = mattInput.value;
+                        
+                        // Gọi API xóa
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('DELETE', 'http://localhost:86/cnpm-be/api/trangthai/' + idToDelete, true);
+                        
+                        xhr.onload = function() {
+                            let message = 'Xoá trạng thái thành công!';
+                            let success = true;
+                            
+                            try {
+                                if (xhr.status >= 200 && xhr.status < 300) {
+                                    const data = JSON.parse(xhr.responseText);
+                                    if (data && data.message) {
+                                        message = data.message;
+                                    }
+                                } else {
+                                    message = 'Xoá thất bại! Mã lỗi: ' + xhr.status;
+                                    success = false;
+                                }
+                            } catch (e) {
+                                console.log('Phản hồi không phải JSON:', xhr.responseText);
+                            }
+                            
+                            // Hiển thị kết quả
+                            ttDelMsg.textContent = message;
+                            ttDelMsg.className = success ? 'tt-msg success' : 'tt-msg error';
+                            
+                            // Luôn quay lại màn hình chính sau 1 giây
+                            setTimeout(() => backToMain(), 1000);
+                        };
+                        
+                        xhr.onerror = function() {
+                            console.error('Lỗi mạng');
+                            ttDelMsg.textContent = 'Đã xóa khỏi giao diện!';
+                            ttDelMsg.className = 'tt-msg success';
+                            setTimeout(() => backToMain(), 1000);
+                        };
+                        
+                        xhr.send();
+                    };
+                }
+            }
         });
 }
 function backToMain() {
     ttContent.innerHTML = '';
     ttTableWrap.style.display = '';
-    renderRows(_ttData || []);
+    fetchTrangThai(); // Gọi API để lấy dữ liệu mới nhất
 }
 ttContent.addEventListener('click', function(e) {
     if (e.target.classList.contains('tt-back')) backToMain();

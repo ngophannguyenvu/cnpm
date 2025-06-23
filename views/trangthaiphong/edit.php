@@ -62,14 +62,31 @@
 }
 .ttp-form .ttp-msg.success { color: #43a047; }
 .ttp-form .ttp-msg.error { color: #e53935; }
+.ttp-form .ttp-old-info {
+    background: #ffe4ec;
+    padding: 12px 10px 10px 10px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    display: none;
+}
+.ttp-form .ttp-old-info .ttp-old-label {
+    color: #e73370;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
 @media (max-width: 600px) {
     .ttp-form { padding: 10px; }
     .ttp-form-title { font-size: 1.1rem; }
 }
 </style>
-<form class="ttp-form" id="ttp-edit-form">
+<form class="ttp-form" id="ttp-edit-form" autocomplete="off">
     <div class="ttp-form-title">Sửa trạng thái phòng</div>
     <div class="ttp-msg" id="ttp-edit-msg"></div>
+    <div class="ttp-old-info" id="ttp-old-info">
+        <div class="ttp-old-label">Thông tin cũ:</div>
+        <div><b>Mã trạng thái phòng:</b> <span id="ttp-old-mattp"></span></div>
+        <div><b>Tên trạng thái phòng:</b> <span id="ttp-old-tenttp"></span></div>
+    </div>
     <input type="hidden" name="mattp">
     <label for="tenttp">Tên trạng thái phòng</label>
     <input type="text" id="tenttp" name="tenttp" required>
@@ -77,42 +94,55 @@
     <button type="button" class="ttp-btn ttp-back">Quay lại</button>
 </form>
 <script>
-document.querySelector('.ttp-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const ttpEditForm = document.getElementById('ttp-edit-form');
-const ttpEditMsg = document.getElementById('ttp-edit-msg');
-if (typeof _ttpData !== 'undefined' && ttpEditForm.mattp.value) {
-    const ttp = (_ttpData || []).find(x => x.MaTrangThaiPhong == ttpEditForm.mattp.value);
-    if (ttp) {
-        ttpEditForm.tenttp.value = ttp.TenTrangThaiPhong || '';
-    }
-}
-ttpEditForm.onsubmit = function(e) {
-    e.preventDefault();
-    ttpEditMsg.textContent = 'Đang xử lý...';
-    ttpEditMsg.className = 'ttp-msg';
-    fetch('http://localhost:86/cnpm-BE/api/trangthaiphong/' + ttpEditForm.mattp.value, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            TenTrangThaiPhong: ttpEditForm.tenttp.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success') {
-            ttpEditMsg.textContent = 'Cập nhật trạng thái phòng thành công!';
-            ttpEditMsg.className = 'ttp-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            ttpEditMsg.textContent = data.message || 'Cập nhật thất bại!';
-            ttpEditMsg.className = 'ttp-msg error';
+(function() {
+    console.log('edit trangthaiphong loaded', document.getElementById('ttp-edit-form'), typeof _ttpData, _ttpData);
+    const ttpEditForm = document.getElementById('ttp-edit-form');
+    const ttpEditMsg = document.getElementById('ttp-edit-msg');
+    const ttpOldInfo = document.getElementById('ttp-old-info');
+    const mattp = ttpEditForm.mattp.value;
+    // Hiển thị thông tin cũ nếu có
+    if (typeof _ttpData !== 'undefined' && mattp) {
+        const ttp = (_ttpData || []).find(x => x.MatrangthaiP == mattp);
+        if (ttp) {
+            document.getElementById('ttp-old-mattp').textContent = ttp.MatrangthaiP || '';
+            document.getElementById('ttp-old-tenttp').textContent = ttp.Tentrangthai || '';
+            ttpEditForm.tenttp.value = ttp.Tentrangthai || '';
+            ttpOldInfo.style.display = '';
         }
-    })
-    .catch(() => {
-        ttpEditMsg.textContent = 'Lỗi kết nối máy chủ!';
-        ttpEditMsg.className = 'ttp-msg error';
-    });
-};
+    }
+    // Nút quay lại
+    ttpEditForm.querySelector('.ttp-back').onclick = function() {
+        if (typeof backToMain === 'function') backToMain();
+    };
+    // Submit form
+    ttpEditForm.onsubmit = function(e) {
+        e.preventDefault();
+        console.log('submit event', ttpEditForm.mattp.value, ttpEditForm.tenttp.value);
+        ttpEditMsg.textContent = 'Đang xử lý...';
+        ttpEditMsg.className = 'ttp-msg';
+        const mattp = ttpEditForm.mattp.value;
+        fetch('http://localhost:86/cnpm-be/api/trangthaiphong/' + mattp, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Tentrangthai: ttpEditForm.tenttp.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success || data.status === 'success' || data.message) {
+                ttpEditMsg.textContent = data.message || 'Cập nhật trạng thái phòng thành công!';
+                ttpEditMsg.className = 'ttp-msg success';
+                setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchTrangThaiPhong === 'function') fetchTrangThaiPhong(); }, 1000);
+            } else {
+                ttpEditMsg.textContent = data.message || 'Cập nhật thất bại!';
+                ttpEditMsg.className = 'ttp-msg error';
+            }
+        })
+        .catch(() => {
+            ttpEditMsg.textContent = 'Lỗi kết nối máy chủ!';
+            ttpEditMsg.className = 'ttp-msg error';
+        });
+    };
+})();
 </script> 

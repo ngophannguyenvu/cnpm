@@ -14,8 +14,8 @@ function fetchDatLichList() {
                         <td>${item.Thoigiandatlich || ''}</td>
                         <td>${item.Trangthai_ || ''}</td>
                         <td>
-                            <a href="edit.php?madl=${encodeURIComponent(item.MaDL || '')}">Sửa</a>
-                            <a href="delete.php?madl=${encodeURIComponent(item.MaDL || '')}">Xóa</a>
+                            <button class="dl-btn dl-edit" data-madl="${item.MaDL}">Sửa</button>
+                            <button class="dl-btn dl-delete" data-madl="${item.MaDL}">Xoá</button>
                         </td>
                     </tr>
                 `).join('');
@@ -183,4 +183,73 @@ function initEditDatLichForm() {
         });
     };
 }
-window.initEditDatLichForm = initEditDatLichForm; 
+window.initEditDatLichForm = initEditDatLichForm;
+
+function loadDLView(view, madl = '') {
+    fetch(`views/datlich/${view}.php`)
+        .then(res => res.text())
+        .then(html => {
+            const content = document.getElementById('dl-content');
+            const tableWrap = document.getElementById('dl-table-wrap');
+            if (content) content.innerHTML = html;
+            if (tableWrap) tableWrap.style.display = 'none';
+            if (view === 'add' && typeof initAddDatLichForm === 'function') {
+                initAddDatLichForm();
+            }
+            if (view === 'edit' && typeof window.initEditDatLichForm === 'function') {
+                window.initEditDatLichForm();
+            }
+            if (view !== 'add' && madl) {
+                document.querySelectorAll('[name="madl"]').forEach(e => e.value = madl);
+            }
+            if (view === 'delete' && madl) {
+                document.querySelectorAll('[name="madl"]').forEach(e => e.value = madl);
+                setTimeout(() => {
+                    const dlBackBtn = document.querySelector('.dl-back');
+                    if (dlBackBtn) {
+                        dlBackBtn.onclick = function() {
+                            if (typeof backToMain === 'function') backToMain();
+                        };
+                    }
+                    const dlConfirmBtn = document.getElementById('dl-del-confirm');
+                    const dlDelMsg = document.getElementById('dl-del-msg');
+                    const madlInput = document.querySelector('input[name="madl"]');
+                    if (dlConfirmBtn && madlInput) {
+                        dlConfirmBtn.onclick = function() {
+                            dlDelMsg.textContent = 'Đang xử lý...';
+                            dlDelMsg.className = 'dl-del-msg';
+                            fetch('http://localhost:86/cnpm-be/api/datlich/' + encodeURIComponent(madlInput.value), {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.message) {
+                                    dlDelMsg.textContent = data.message;
+                                    dlDelMsg.classList.add('success');
+                                    setTimeout(() => { if (typeof backToMain === 'function') backToMain(); if (typeof fetchDatLichList === 'function') fetchDatLichList(); }, 1000);
+                                } else {
+                                    dlDelMsg.textContent = data.error || 'Xoá thất bại!';
+                                    dlDelMsg.classList.add('error');
+                                }
+                            })
+                            .catch(() => {
+                                dlDelMsg.textContent = 'Lỗi kết nối máy chủ!';
+                                dlDelMsg.classList.add('error');
+                            });
+                        };
+                    }
+                }, 0);
+            }
+        });
+}
+
+// Sự kiện cho các nút Sửa/Xoá
+const dlTbody = document.getElementById('dl-tbody');
+dlTbody.addEventListener('click', function(e) {
+    if (e.target.classList.contains('dl-edit')) {
+        loadDLView('edit', e.target.dataset.madl);
+    } else if (e.target.classList.contains('dl-delete')) {
+        loadDLView('delete', e.target.dataset.madl);
+    }
+}); 

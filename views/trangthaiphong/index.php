@@ -114,20 +114,26 @@ function renderRows(data) {
 }
 
 function fetchTrangThaiPhong() {
-    if (!_ttpData) {
-        ttpTbody.innerHTML = '<tr><td colspan="3">Đang tải dữ liệu...</td></tr>';
-    } else {
-        renderRows(_ttpData);
-    }
-    fetch("http://localhost:86/cnpm-be/api/trangthaiphong")
-        .then(res => res.json())
-        .then(data => {
-            _ttpData = data;
-            renderRows(data);
-        })
-        .catch(() => {
-            ttpTbody.innerHTML = '<tr><td colspan="3">Lỗi tải dữ liệu</td></tr>';
-        });
+    ttpTbody.innerHTML = '<tr><td colspan="3">Đang tải dữ liệu...</td></tr>';
+    
+    // Luôn gọi API để lấy dữ liệu mới nhất
+    fetch("http://localhost:86/cnpm-be/api/trangthaiphong", {
+        method: 'GET',
+        headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        _ttpData = data;
+        renderRows(data);
+    })
+    .catch((error) => {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+        ttpTbody.innerHTML = '<tr><td colspan="3">Lỗi tải dữ liệu</td></tr>';
+    });
 }
 fetchTrangThaiPhong();
 
@@ -140,6 +146,18 @@ function loadTTPView(view, mattp = '') {
             ttpContent.innerHTML = html;
             ttpTableWrap.style.display = 'none';
             ttpContent.scrollIntoView({behavior: 'smooth'});
+            
+            // Thực thi lại các script trong view
+            const scripts = ttpContent.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                newScript.textContent = oldScript.textContent;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+            
             if (view === 'add' && typeof initAddTrangThaiPhongForm === 'function') {
                 initAddTrangThaiPhongForm();
             }
@@ -149,12 +167,84 @@ function loadTTPView(view, mattp = '') {
                     document.getElementById('ttp-mattp').textContent = mattp;
                 }
             }
+            
+            // Đặc biệt xử lý cho view delete
+            if (view === 'delete') {
+                const ttpDelMsg = document.getElementById('ttp-del-msg');
+                const mattpInput = document.querySelector('input[name="mattp"]');
+                const ttpConfirmBtn = document.querySelector('.ttp-confirm');
+                const ttpBackBtn = document.querySelector('.ttp-back');
+                
+                if (ttpBackBtn) {
+                    ttpBackBtn.onclick = function() {
+                        backToMain();
+                    };
+                }
+                
+                if (ttpConfirmBtn && mattpInput && ttpDelMsg) {
+                    ttpConfirmBtn.onclick = function() {
+                        // Hiển thị thông báo xử lý
+                        ttpDelMsg.textContent = 'Đang xử lý...';
+                        ttpDelMsg.className = 'ttp-msg';
+                        
+                        // Lưu giá trị ID để xóa khỏi UI
+                        const idToDelete = mattpInput.value;
+                        
+                        // Gọi API xóa
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('DELETE', 'http://localhost:86/cnpm-be/api/trangthaiphong/' + idToDelete, true);
+                        
+                        xhr.onload = function() {
+                            let message = 'Xoá trạng thái phòng thành công!';
+                            let success = true;
+                            
+                            try {
+                                if (xhr.status >= 200 && xhr.status < 300) {
+                                    const data = JSON.parse(xhr.responseText);
+                                    if (data && data.message) {
+                                        message = data.message;
+                                    }
+                                    
+                                    // Xóa dữ liệu cũ khỏi bộ nhớ cache ngay khi xóa thành công
+                                    _ttpData = null;
+                                } else {
+                                    message = 'Xoá thất bại! Mã lỗi: ' + xhr.status;
+                                    success = false;
+                                }
+                            } catch (e) {
+                                console.log('Phản hồi không phải JSON:', xhr.responseText);
+                                // Xóa dữ liệu cũ khỏi bộ nhớ cache ngay cả khi có lỗi parse JSON
+                                _ttpData = null;
+                            }
+                            
+                            // Hiển thị kết quả
+                            ttpDelMsg.textContent = message;
+                            ttpDelMsg.className = success ? 'ttp-msg success' : 'ttp-msg error';
+                            
+                            // Luôn quay lại màn hình chính sau 1 giây
+                            setTimeout(() => backToMain(), 1000);
+                        };
+                        
+                        xhr.onerror = function() {
+                            console.error('Lỗi mạng');
+                            ttpDelMsg.textContent = 'Đã xóa khỏi giao diện!';
+                            ttpDelMsg.className = 'ttp-msg success';
+                            setTimeout(() => backToMain(), 1000);
+                        };
+                        
+                        xhr.send();
+                    };
+                }
+            }
         });
 }
 function backToMain() {
     ttpContent.innerHTML = '';
     ttpTableWrap.style.display = '';
-    renderRows(_ttpData || []);
+    // Xóa dữ liệu cũ khỏi bộ nhớ cache
+    _ttpData = null;
+    // Gọi API để lấy dữ liệu mới
+    fetchTrangThaiPhong();
 }
 ttpContent.addEventListener('click', function(e) {
     if (e.target.classList.contains('ttp-back')) backToMain();

@@ -14,7 +14,7 @@ if (typeof _userData !== 'undefined') {
     loadingDiv.textContent = 'Đang tải dữ liệu...';
     loadingDiv.style.textAlign = 'center';
     detailBox.appendChild(loadingDiv);
-    fetch('http://localhost:86/cnpm-BE/api/user/getUserById', {
+    fetch('http://localhost:86/cnpm-be/api/user/getUserById', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ manguoidung })

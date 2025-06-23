@@ -52,34 +52,4 @@
     <button class="user-btn user-confirm">Xoá</button>
     <button class="user-btn user-back">Quay lại</button>
 </div>
-<script>
-document.querySelector('.user-back').onclick = function() {
-    if (typeof backToMain === 'function') backToMain();
-};
-const userDelMsg = document.getElementById('user-del-msg');
-const manguoidungInput = document.querySelector('input[name="manguoidung"]');
-document.querySelector('.user-confirm').onclick = function() {
-    userDelMsg.textContent = 'Đang xử lý...';
-    userDelMsg.className = 'user-msg';
-    fetch('http://localhost:86/cnpm-BE/api/user/deleteUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ manguoidung: manguoidungInput.value })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success || data.status === 'success' || data.message) {
-            userDelMsg.textContent = data.message || 'Xoá người dùng thành công!';
-            userDelMsg.className = 'user-msg success';
-            setTimeout(() => { if (typeof backToMain === 'function') backToMain(); }, 1000);
-        } else {
-            userDelMsg.textContent = data.message || 'Xoá thất bại!';
-            userDelMsg.className = 'user-msg error';
-        }
-    })
-    .catch(() => {
-        userDelMsg.textContent = 'Lỗi kết nối máy chủ!';
-        userDelMsg.className = 'user-msg error';
-    });
-};
-</script> 
+<!-- Script xử lý đã được chuyển sang user.js --> 
