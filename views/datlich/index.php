@@ -125,6 +125,34 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .dl-btn-confirm {
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            margin: 0 2px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .dl-btn-confirm:hover {
+            background: #388e3c;
+        }
+        .dl-btn-invoice {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            margin: 0 2px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .dl-btn-invoice:hover {
+            background: #0d47a1;
+        }
         @media (max-width: 600px) {
             .dl-container { padding: 10px; }
             .dl-title { font-size: 1.2rem; }

@@ -159,7 +159,7 @@ class DatLichApiController
             return;
         }
 
-        $result = $this->datLichModel->createBooking($userId, $thoigian, $ghichu, $dichvu_ids);
+        $result = $this->datLichModel->createBooking($userId, $thoigian, 'Đang chờ', $dichvu_ids);
 
         if ($result === true) {
             echo json_encode(['success' => true, 'message' => 'Đặt lịch thành công! Chúng tôi sẽ sớm liên hệ với bạn.']);

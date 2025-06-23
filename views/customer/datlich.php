@@ -253,7 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const bookingData = {
             dichvu_ids: Array.from(selectedServices),
             thoigian: document.getElementById('thoigian').value,
-            ghichu: document.getElementById('ghichu').value
+            ghichu: document.getElementById('ghichu').value,
+            trangthai: 'Đang chờ'
         };
 
         if (bookingData.dichvu_ids.length === 0) {

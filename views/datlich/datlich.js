@@ -2,31 +2,136 @@
 function fetchDatLichList() {
     const tbody = document.getElementById('dl-tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="5">Đang tải dữ liệu...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary" role="status"></div></td></tr>';
+    
     fetch('http://localhost:81/cnpm/api/datlich')
         .then(res => res.json())
         .then(data => {
             if (Array.isArray(data) && data.length > 0) {
-                tbody.innerHTML = data.map(item => `
-                    <tr>
-                        <td>${item.MaDL || ''}</td>
-                        <td>${item.Manguoidung || ''}</td>
-                        <td>${item.Thoigiandatlich || ''}</td>
-                        <td>${item.Trangthai_ || ''}</td>
-                        <td>
-                            <a href="edit.php?madl=${encodeURIComponent(item.MaDL || '')}">Sửa</a>
-                            <a href="delete.php?madl=${encodeURIComponent(item.MaDL || '')}">Xóa</a>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = data.map(item => {
+                    const trangthai = (item.Trangthai_ && item.Trangthai_.trim()) ? item.Trangthai_.trim() : 'Đang chờ';
+                    
+                    // Tạo các nút thao tác cơ bản (luôn hiển thị)
+                    let actionBtns = `
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-warning btn-sm" onclick="window.location.href='edit.php?madl=${encodeURIComponent(item.MaDL || '')}'">
+                                <i class="fas fa-edit"></i> Sửa
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="if(confirm('Bạn có chắc muốn xóa?')) window.location.href='delete.php?madl=${encodeURIComponent(item.MaDL || '')}'">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                    `;
+
+                    // Thêm nút xác nhận nếu trạng thái là "Đang chờ"
+                    if (trangthai.toLowerCase() === 'đang chờ') {
+                        actionBtns += `
+                            <button class="btn btn-success btn-sm dl-btn-confirm" data-madl="${item.MaDL}">
+                                <i class="fas fa-check"></i> Xác nhận lịch đặt
+                            </button>
+                        `;
+                    }
+                    // Thêm nút lập hóa đơn nếu trạng thái là "Xác nhận"
+                    else if (trangthai.toLowerCase() === 'xác nhận') {
+                        actionBtns += `
+                            <button class="btn btn-primary btn-sm dl-btn-invoice" data-madl="${item.MaDL}">
+                                <i class="fas fa-file-invoice"></i> Lập hóa đơn
+                            </button>
+                        `;
+                    }
+
+                    actionBtns += '</div>';
+
+                    // Tạo badge cho trạng thái
+                    const getBadgeClass = (status) => {
+                        switch(status.toLowerCase()) {
+                            case 'đang chờ': return 'bg-warning text-dark';
+                            case 'xác nhận': return 'bg-success';
+                            case 'đã hoàn thành': return 'bg-info';
+                            case 'đã hủy': return 'bg-danger';
+                            default: return 'bg-secondary';
+                        }
+                    };
+
+                    return `
+                        <tr data-madl="${item.MaDL}">
+                            <td>${item.MaDL || ''}</td>
+                            <td>${item.Manguoidung || ''}</td>
+                            <td>${formatDateTime(item.Thoigiandatlich) || ''}</td>
+                            <td><span class="badge ${getBadgeClass(trangthai)}">${trangthai}</span></td>
+                            <td>${actionBtns}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Gán sự kiện cho nút xác nhận - không cần hỏi xác nhận
+                document.querySelectorAll('.dl-btn-confirm').forEach(btn => {
+                    btn.onclick = function() {
+                        const madl = this.getAttribute('data-madl');
+                        updateTrangThai(madl, 'Xác nhận');
+                    };
+                });
+
+                // Gán sự kiện cho nút lập hóa đơn
+                document.querySelectorAll('.dl-btn-invoice').forEach(btn => {
+                    btn.onclick = function() {
+                        const madl = this.getAttribute('data-madl');
+                        window.location.href = `../hoadon/add.php?madl=${madl}`;
+                    };
+                });
             } else {
-                tbody.innerHTML = '<tr><td colspan="5">Không có dữ liệu đặt lịch!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">Không có dữ liệu đặt lịch!</td></tr>';
             }
         })
         .catch(() => {
-            tbody.innerHTML = '<tr><td colspan="5">Lỗi tải dữ liệu!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi tải dữ liệu!</td></tr>';
         });
 }
+
+// Hàm format ngày giờ
+function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return '';
+    const dt = new Date(dateTimeStr);
+    if (isNaN(dt.getTime())) return dateTimeStr;
+    return dt.toLocaleString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Hàm cập nhật trạng thái - không hiện thông báo xác nhận
+function updateTrangThai(madl, trangthai) {
+    const row = document.querySelector(`tr[data-madl="${madl}"]`);
+    if (!row) return;
+
+    const manguoidung = row.querySelector('td:nth-child(2)').textContent;
+    const thoigiandatlich = row.querySelector('td:nth-child(3)').textContent;
+
+    fetch(`http://localhost:81/cnpm/api/datlich/${madl}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            Trangthai: trangthai,
+            Manguoidung: manguoidung,
+            Thoigiandatlich: thoigiandatlich
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.message) {
+            // Cập nhật lại bảng ngay lập tức
+            fetchDatLichList();
+        } else {
+            console.error('Cập nhật trạng thái thất bại:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi kết nối:', error);
+    });
+}
+
 window.fetchDatLichList = fetchDatLichList;
 
 fetchDatLichList();
