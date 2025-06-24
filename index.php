@@ -333,7 +333,7 @@ if ($controllerName === 'CustomerController') {
                 <li data-view="dichvu"><i class="fas fa-spa"></i>Dịch vụ</li>
                 <li data-view="phong"><i class="fas fa-door-open"></i>Quản lý phòng</li>
                 <li data-view="phuongthuc"><i class="fas fa-credit-card"></i>Phương thức thanh toán</li>
-                <li data-view="quangcao"><i class="fas fa-bullhorn"></i>Quản lý quảng cáo</li>
+                <!-- <li data-view="quangcao"><i class="fas fa-bullhorn"></i>Quản lý quảng cáo</li> -->
                 <li data-view="hoadon"><i class="fas fa-file-invoice-dollar"></i>Quản lý tài chính</li>
                 <li data-view="danhgia"><i class="fas fa-star"></i>Quản lý đánh giá</li>
                 <li data-view="datlich"><i class="fas fa-calendar-check"></i>Quản lý đặt lịch</li>
